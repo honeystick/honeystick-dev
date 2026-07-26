@@ -1,0 +1,18 @@
+{
+  "name": "@honeystick/hono",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Honeystick handler for Hono",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@honeystick/js": "*"
+  },
+  "peerDependencies": {
+    "hono": ">=4"
+  },
+  "sideEffects": false
+}

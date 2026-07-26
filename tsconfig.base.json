@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@honeystick/js": [
+        "packages/js/src/index.ts"
+      ],
+      "@honeystick/js/backend": [
+        "packages/js/src/backend/index.ts"
+      ],
+      "@honeystick/react": [
+        "packages/react/src/index.ts"
+      ],
+      "@honeystick/react/hooks": [
+        "packages/react/src/hooks/index.ts"
+      ]
+    }
+  }
+}
