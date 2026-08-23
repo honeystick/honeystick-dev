@@ -1,6 +1,6 @@
 import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 
-import type { HoneystickError } from '@honeystick/js';
+import type { HoneystickError } from 'honeystick';
 
 /** Any hook's own params, plus a react-query escape hatch for the caller. */
 export type HookParams<

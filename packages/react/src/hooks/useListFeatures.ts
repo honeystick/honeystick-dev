@@ -2,10 +2,10 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import type { HoneystickError, ListArgs } from '@honeystick/js';
+import type { HoneystickError, ListArgs } from 'honeystick';
 
-import { useHoneystickClient } from '../HoneystickContext';
-import type { HookParams } from './types';
+import { useHoneystickClient } from '../HoneystickContext.js';
+import type { HookParams } from './types.js';
 
 export type UseListFeaturesParams = HookParams<ListArgs, any[]>;
 

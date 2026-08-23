@@ -1,15 +1,20 @@
 {
   "name": "honeystick-dev",
-  "private": true,
+  "private": false,
   "type": "module",
   "workspaces": [
     "packages/js",
     "packages/react",
+    "packages/react-native",
+    "packages/next",
     "packages/expo",
     "packages/hono",
-    "packages/express"
+    "packages/express",
+    "apps/*"
   ],
   "scripts": {
+    "build": "tsc --build",
+    "prepare": "tsc --build",
     "ts": "tsc --build",
     "ts:check": "tsc --build --force"
   },

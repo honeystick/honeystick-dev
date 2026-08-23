@@ -1,11 +1,11 @@
-import type { ClientOptions } from './config';
-import { createResources, type Resources } from './resources';
+import type { ClientOptions } from './config.js';
+import { createResources, type Resources } from './resources.js';
 import {
   directTransport,
   proxyTransport,
   type ProxyOptions,
   type Transport,
-} from './transport';
+} from './transport.js';
 
 export {
   API_URLS,
@@ -16,10 +16,16 @@ export {
   type ClientOptions,
   type Environment,
   type KeyKind,
-} from './config';
-export { HoneystickError } from './errors';
-export type { ListArgs, Paged, Resources } from './resources';
-export type { ProxyOptions, Transport } from './transport';
+} from './config.js';
+export { HoneystickError } from './errors.js';
+export type {
+  CustomerRef,
+  ListArgs,
+  Paged,
+  PlanType,
+  Resources,
+} from './resources.js';
+export type { ProxyOptions, Transport } from './transport.js';
 
 export type Honeystick = Resources & {
   readonly environment: Transport['environment'];

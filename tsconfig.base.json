@@ -6,8 +6,8 @@
       "DOM",
       "DOM.Iterable"
     ],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "declaration": true,
@@ -20,17 +20,26 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@honeystick/js": [
-        "packages/js/src/index.ts"
-      ],
-      "@honeystick/js/backend": [
-        "packages/js/src/backend/index.ts"
-      ],
       "@honeystick/react": [
         "packages/react/src/index.ts"
       ],
       "@honeystick/react/hooks": [
         "packages/react/src/hooks/index.ts"
+      ],
+      "@honeystick/next": [
+        "packages/next/src/index.ts"
+      ],
+      "@honeystick/next/client": [
+        "packages/next/src/client.ts"
+      ],
+      "honeystick": [
+        "packages/js/src/index.ts"
+      ],
+      "honeystick/backend": [
+        "packages/js/src/backend/index.ts"
+      ],
+      "@honeystick/react-native": [
+        "packages/react-native/src/index.ts"
       ]
     }
   }

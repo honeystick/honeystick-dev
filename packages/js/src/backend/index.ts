@@ -2,9 +2,9 @@ import {
   DEFAULT_PATH_PREFIX,
   resolveConfig,
   type ClientOptions,
-} from '../config';
-import { HoneystickError } from '../errors';
-import { directTransport, type RequestArgs } from '../transport';
+} from '../config.js';
+import { HoneystickError } from '../errors.js';
+import { directTransport, type RequestArgs } from '../transport.js';
 
 /**
  * The handler every framework adapter wraps.
@@ -49,16 +49,60 @@ export type CoreHandlerOptions = ClientOptions & {
    * server code, not by whatever is running in a page.
    */
   allowedMethods?: string[];
+  /**
+   * Let a proxied caller list the organization's customers and every plan in
+   * it. Off by default, and the name is a warning rather than a description.
+   *
+   * Those endpoints answer with other people's email addresses. Nothing in this
+   * handler can make them safe, because the API has no way to scope a list to
+   * one customer - so turning this on is a statement that you have put your own
+   * authorization in front of it, not a convenience flag.
+   *
+   * The thing it exists for is `useCustomer()` called with no `planId`, which
+   * reads the newest plan out of that list. Passing a `planId` is both safer
+   * and more correct, and is what every sample in this repo now does.
+   */
+  allowOrgWideReads?: boolean;
 };
 
 const DEFAULT_ALLOWED = ['GET', 'POST'];
 
-/** paths a proxied caller may never reach, whatever method they use */
+/**
+ * Paths a proxied caller may never reach, whatever method they use.
+ *
+ * A deny-list rather than an allow-list, which is a trade worth naming because
+ * it is the risky direction: a deny-list fails *open*, so an endpoint added to
+ * the API after this was written is reachable until someone remembers to add
+ * it. The alternative fails closed but breaks every new endpoint on the day it
+ * ships, which for a handler whose whole job is forwarding an evolving API is
+ * its own kind of broken.
+ *
+ * Living with that means the rule has to be stated rather than assumed:
+ * **anything that returns other people's data is denied.** The last three
+ * entries are that rule applied, and they are not hypothetical - without them
+ * an anonymous browser could `GET /billing/customers` and receive every
+ * customer in the organization with their email, phone and address, because
+ * `identify` establishes *who is calling* and nothing downstream checks the
+ * answer against *what they asked for*.
+ *
+ * What stays reachable is what a client legitimately needs: the catalogue, and
+ * one plan by an id it was given at checkout. That is still not authorization -
+ * an id is guessable and nothing here checks it belongs to the caller - which
+ * is why `identify` is a floor and not a ceiling. See the note on
+ * `allowOrgWideReads`.
+ */
 const BLOCKED_PATHS = [
   /^\/?organizations/,
   /^\/?account/,
   /^\/?settings/,
   /^\/?support/,
+  // the customer collection: listing them, and deleting them in bulk
+  /^\/?customers\/?$/,
+  // a customer record by id. `/customers/plans/...` is deliberately not matched
+  // - those are per-plan operations an account page needs
+  /^\/?customers\/\d+/,
+  // every plan in the organization, each carrying its customer's email
+  /^\/?customer-plans\/?$/,
 ];
 
 export function createCoreHandler(options: CoreHandlerOptions) {
@@ -99,7 +143,10 @@ export function createCoreHandler(options: CoreHandlerOptions) {
       };
     }
 
-    if (BLOCKED_PATHS.some((blocked) => blocked.test(path))) {
+    const blocked = options.allowOrgWideReads
+      ? BLOCKED_PATHS.slice(0, 4)
+      : BLOCKED_PATHS;
+    if (blocked.some((rule) => rule.test(path))) {
       return {
         status: 403,
         body: {

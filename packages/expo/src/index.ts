@@ -1,56 +1,28 @@
-import { createElement, type ReactNode } from 'react';
-
-import {
-  HoneystickProvider as ReactProvider,
-  type HoneystickProviderProps as ReactProviderProps,
-} from '@honeystick/react';
-
-export * from '@honeystick/react/hooks';
-export { HoneystickContext, useHoneystickClient } from '@honeystick/react';
-export { HoneystickError } from '@honeystick/js';
-
-export type HoneystickProviderProps = Omit<
-  ReactProviderProps,
-  'backendUrl' | 'children'
-> & {
-  /**
-   * Your server's origin, e.g. "https://api.yourapp.com".
-   *
-   * Required here where it is optional on web: a page can call /billing on the
-   * origin it was served from, but an app was not served from anywhere. Leaving
-   * it out would resolve every call against nothing and fail at runtime, so it
-   * is asked for up front.
-   */
-  backendUrl: string;
-  children: ReactNode;
-};
-
 /**
- * Honeystick for Expo and React Native.
+ * Honeystick for Expo.
  *
- * The same hooks as @honeystick/react - a native app reaches the handler on your
- * server exactly as a browser does, and holds no secret key either:
+ * A re-export of `@honeystick/react-native`, and nothing else. There is no
+ * Expo-specific code in it - the provider needs a `backendUrl` because an app
+ * has no origin, which is as true in a bare React Native project as it is here,
+ * and the hooks are `@honeystick/react`'s unchanged.
+ *
+ * The package survives its own emptiness for one reason: `@honeystick/expo` is
+ * the name an Expo app looks for, and a name that resolves to nothing is a
+ * worse answer than a file like this. Two packages, one implementation, so the
+ * native behaviour has exactly one place to be right.
  *
  * ```tsx
- * <HoneystickProvider
- *   backendUrl="https://api.yourapp.com"
- *   pathPrefix="/billing"
- *   includeCredentials
- * >
+ * import { HoneystickProvider } from '@honeystick/expo';
+ *
+ * <HoneystickProvider backendUrl={API_URL} includeCredentials>
  *   <App />
  * </HoneystickProvider>
  * ```
+ *
+ * One Expo-only note that belongs here rather than in the shared package: the
+ * global `fetch` on native is backed by XMLHttpRequest and quietly lacks a
+ * readable response body. An app that needs streaming passes Expo's
+ * `expo/fetch` to the provider's `fetch` prop rather than reaching past the SDK
+ * for it.
  */
-export function HoneystickProvider({
-  children,
-  backendUrl,
-  ...options
-}: HoneystickProviderProps) {
-  if (!backendUrl) {
-    throw new Error(
-      'HoneystickProvider needs backendUrl on native: there is no current origin to fall back on. Point it at the server your Honeystick handler is mounted on.',
-    );
-  }
-
-  return createElement(ReactProvider, { ...options, backendUrl, children });
-}
+export * from '@honeystick/react-native';

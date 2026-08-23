@@ -16,7 +16,10 @@ export type Environment = 'sandbox' | 'live';
 
 export const ENVIRONMENTS: Environment[] = ['sandbox', 'live'];
 
-/** Where each environment lives. Override with `baseUrl` for local work. */
+/**
+ * Where each environment lives. Override with `baseUrl`, or HONEYSTICK_URL in
+ * the environment, to point at a local API.
+ */
 export const API_URLS: Record<Environment, string> = {
   sandbox: 'https://sandbox.api.honeystick.co.za',
   live: 'https://api.honeystick.co.za',
@@ -85,6 +88,37 @@ export type ClientOptions = {
   environment?: Environment;
   /** full origin override, for local servers and self-hosting */
   baseUrl?: string;
+  /**
+   * Where a payment provider sends the customer when they are done, and where
+   * it sends them if they back out.
+   *
+   * These belong to your app, not to a billing call: they are your pages, and
+   * the same two every time. Set them once on the client - or as
+   * HONEYSTICK_RETURN_URL and HONEYSTICK_CANCEL_URL - and `checkout` carries
+   * them for you. A call that names its own still wins, which is what an
+   * order-specific landing page needs.
+   */
+  returnUrl?: string;
+  cancelUrl?: string;
+  /**
+   * Where Honeystick should tell you a payment settled.
+   *
+   * The third of the same family, and the one that arrives without anybody
+   * asking. `returnUrl` and `cancelUrl` are where the *customer* is sent; this
+   * is where your *server* is told - which matters because the two are not the
+   * same event. A customer who closes the payment page never reaches the return
+   * url, and one who reaches it may still be a payment that has not cleared.
+   * Only the notification says a payment happened.
+   *
+   * Set it and the SDK carries it through checkout, exactly as it carries the
+   * other two, and Honeystick posts to it once the provider confirms. Leave it
+   * unset and nothing is sent - the flow is unchanged, you simply have to go
+   * looking rather than being told.
+   *
+   * Your own origin, and reachable from the internet: this is a server-to-server
+   * call, so localhost only works if something is tunnelling to it.
+   */
+  notifyUrl?: string;
   fetch?: typeof globalThis.fetch;
 };
 
@@ -95,6 +129,9 @@ export type ResolvedConfig = {
   environment: Environment;
   /** origin + version, ready for a path to be appended */
   apiUrl: string;
+  returnUrl: string | null;
+  cancelUrl: string | null;
+  notifyUrl: string | null;
   fetch: typeof globalThis.fetch;
 };
 
@@ -144,7 +181,7 @@ export function resolveConfig(options: ClientOptions = {}): ResolvedConfig {
     (ENVIRONMENTS.includes(requested) ? requested : 'sandbox');
 
   const origin =
-    options.baseUrl ?? readEnv('HONEYSTICK_BASE_URL') ?? API_URLS[environment];
+    options.baseUrl ?? readEnv('HONEYSTICK_URL') ?? API_URLS[environment];
 
   return {
     key,
@@ -152,6 +189,9 @@ export function resolveConfig(options: ClientOptions = {}): ResolvedConfig {
     orgId: options.orgId ?? readEnv('HONEYSTICK_ORG_ID') ?? null,
     environment,
     apiUrl: `${origin.replace(/\/+$/, '')}/api/${API_VERSION}`,
+    returnUrl: options.returnUrl ?? readEnv('HONEYSTICK_RETURN_URL') ?? null,
+    cancelUrl: options.cancelUrl ?? readEnv('HONEYSTICK_CANCEL_URL') ?? null,
+    notifyUrl: options.notifyUrl ?? readEnv('HONEYSTICK_NOTIFY_URL') ?? null,
     fetch: options.fetch ?? globalThis.fetch?.bind(globalThis),
   };
 }

@@ -1,0 +1,53 @@
+{
+  "name": "@honeystick/react-native",
+  "version": "0.1.0",
+  "description": "Honeystick provider and hooks for React Native",
+  "license": "MIT",
+  "keywords": [
+    "honeystick",
+    "billing",
+    "subscriptions",
+    "usage-based",
+    "react-native",
+    "sdk"
+  ],
+  "homepage": "https://honeystick.co.za",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/honeystick/honeystick-js.git",
+    "directory": "packages/react-native"
+  },
+  "bugs": {
+    "url": "https://github.com/honeystick/honeystick-js/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "prepublishOnly": "tsc --build"
+  },
+  "dependencies": {
+    "@honeystick/react": "^0.1.0",
+    "honeystick": "^0.1.0"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-native": ">=0.74"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false
+}

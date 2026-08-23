@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from 'react';
 
-import type { Honeystick } from '@honeystick/js';
+import type { Honeystick } from 'honeystick';
 
 export type HoneystickContextValue = {
   client: Honeystick;

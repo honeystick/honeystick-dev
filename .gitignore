@@ -2,3 +2,24 @@ node_modules/
 dist/
 *.tsbuildinfo
 .DS_Store
+
+# Environment files, ignored repo-wide rather than per app.
+#
+# This repo is public, and the only thing standing between that and a published
+# secret key is a rule like this one. Per-app .gitignore files are not enough:
+# they only protect the app that remembered to write one, and the app that
+# forgets is the one nobody notices until the key is in a commit. The template
+# is the exception, and is the only record of what each app reads.
+.env
+.env.*
+!.env.example
+
+# Wrangler's local secret store - the Cloudflare equivalent of .env.local, and
+# exactly as unpublishable
+.dev.vars
+.dev.vars.*
+.wrangler/
+
+# OpenNext build output
+.open-next/
+.next/

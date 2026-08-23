@@ -5,7 +5,8 @@
     "outDir": "dist",
     "noEmit": false,
     "composite": true,
-    "baseUrl": "../.."
+    "baseUrl": "../..",
+    "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "include": [
     "src"
@@ -15,7 +16,7 @@
       "path": "../js"
     },
     {
-      "path": "../react"
+      "path": "../react-native"
     }
   ]
 }

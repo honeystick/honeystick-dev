@@ -5,7 +5,8 @@
     "outDir": "dist",
     "noEmit": false,
     "baseUrl": "../..",
-    "composite": true
+    "composite": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "include": [
     "src"

@@ -1,6 +1,9 @@
-export { HoneystickProvider } from './HoneystickProvider';
-export type { HoneystickProviderProps } from './HoneystickProvider';
-export { HoneystickContext, useHoneystickClient } from './HoneystickContext';
-export type { HoneystickContextValue } from './HoneystickContext';
-export * from './hooks';
-export { HoneystickError } from '@honeystick/js';
+export { HoneystickProvider } from './HoneystickProvider.js';
+export type { HoneystickProviderProps } from './HoneystickProvider.js';
+export { HoneystickContext, useHoneystickClient } from './HoneystickContext.js';
+export { HoneystickFab } from './HoneystickFab.js';
+export type { HoneystickFabProps } from './HoneystickFab.js';
+export type { HoneystickContextValue } from './HoneystickContext.js';
+export * from './hooks/index.js';
+export { HoneystickError } from 'honeystick';
+export type { CustomerRef, PlanType } from 'honeystick';

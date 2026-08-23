@@ -3,9 +3,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useMemo, useRef, type ReactNode } from 'react';
 
-import { createHoneystickClient, DEFAULT_PATH_PREFIX } from '@honeystick/js';
+import { createHoneystickClient, DEFAULT_PATH_PREFIX } from 'honeystick';
 
-import { HoneystickContext, type HoneystickContextValue } from './HoneystickContext';
+import { HoneystickContext, type HoneystickContextValue } from './HoneystickContext.js';
 
 export type HoneystickProviderProps = {
   children: ReactNode;
@@ -25,6 +25,15 @@ export type HoneystickProviderProps = {
   headers?: Record<string, string>;
   /** Safe to ship. A secret key must never appear here. */
   publishableKey?: string;
+  /**
+   * The fetch to call with. Defaults to the global one.
+   *
+   * Worth having on native, where the global `fetch` is backed by
+   * XMLHttpRequest and quietly lacks things a browser's has - a readable
+   * response body most of all. An app that needs those passes Expo's
+   * `expo/fetch` here rather than reaching past the SDK to get them.
+   */
+  fetch?: typeof globalThis.fetch;
 };
 
 /**
@@ -44,6 +53,7 @@ export const HoneystickProvider = ({
   includeCredentials,
   headers,
   publishableKey,
+  fetch,
 }: HoneystickProviderProps) => {
   const queryClientRef = useRef<QueryClient | null>(null);
   if (!queryClientRef.current) {
@@ -67,6 +77,7 @@ export const HoneystickProvider = ({
         includeCredentials,
         headers,
         publishableKey,
+        fetch,
       }),
     }),
     [
@@ -74,6 +85,7 @@ export const HoneystickProvider = ({
       pathPrefix,
       includeCredentials,
       publishableKey,
+      fetch,
       JSON.stringify(headers),
     ],
   );

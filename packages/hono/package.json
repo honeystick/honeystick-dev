@@ -1,18 +1,50 @@
 {
   "name": "@honeystick/hono",
-  "version": "0.0.0",
-  "type": "module",
+  "version": "0.1.0",
   "description": "Honeystick handler for Hono",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "license": "MIT",
+  "keywords": [
+    "honeystick",
+    "billing",
+    "subscriptions",
+    "hono",
+    "sdk"
+  ],
+  "homepage": "https://honeystick.co.za",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/honeystick/honeystick-js.git",
+    "directory": "packages/hono"
+  },
+  "bugs": {
+    "url": "https://github.com/honeystick/honeystick-js/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "prepublishOnly": "tsc --build"
   },
   "dependencies": {
-    "@honeystick/js": "*"
+    "honeystick": "^0.1.0"
   },
   "peerDependencies": {
     "hono": ">=4"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "sideEffects": false
 }

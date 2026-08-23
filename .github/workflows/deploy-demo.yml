@@ -1,0 +1,75 @@
+name: Deploy demo store
+
+# Push to main only, and never `pull_request` or `pull_request_target`.
+#
+# That is the load-bearing line in this file. The repository is public, so
+# anyone can open a pull request, and a workflow that runs on one runs code the
+# author controls. `pull_request` from a fork is not given the repository's
+# secrets, which is the safe half; `pull_request_target` is given them while
+# checking out the fork's code, which is the well-known way to hand a
+# Cloudflare token to a stranger. Neither is needed to deploy a demo, so
+# neither is here.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/next-store/**'
+      - 'packages/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/deploy-demo.yml'
+  workflow_dispatch:
+
+# Nothing here writes to the repository. The default token is read-only so that
+# a compromised dependency in the build cannot push a commit or a release.
+permissions:
+  contents: read
+
+# One deploy at a time. Two pushes in quick succession would otherwise race to
+# upload, and the Worker that wins is whichever finished last rather than
+# whichever was newer.
+concurrency:
+  group: deploy-demo
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and deploy to Cloudflare
+    runs-on: ubuntu-latest
+    # Point this at a GitHub Environment to require a manual approval before
+    # the secrets are handed over. Worth doing once the demo is real.
+    environment: demo
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: apps/next-store/.nvmrc
+          cache: npm
+
+      # `npm ci` from the workspace root. The store depends on honeystick,
+      # @honeystick/next and @honeystick/react at "*", which npm resolves to the
+      # local packages - installing inside apps/next-store instead would send it
+      # looking for those on the registry, where they are not.
+      - name: Install
+        run: npm ci
+
+      # The SDK packages export TypeScript source rather than build output, so
+      # Next transpiles them and there is nothing to compile first. This runs
+      # anyway, as a typecheck: a deploy is a bad moment to discover the store
+      # and the SDK disagree about a type.
+      - name: Typecheck packages
+        run: npx tsc --build
+
+      # Builds with OpenNext and uploads with wrangler in one step.
+      #
+      # HONEYSTICK_SECRET_KEY is deliberately absent. It is set once against the
+      # Worker with `wrangler secret put` and survives every deploy, so this job
+      # never holds a billing credential - which means a leak here costs a
+      # redeploy rather than an organization's data.
+      - name: Deploy
+        run: npm run cf:deploy --workspace @honeystick/next-store
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

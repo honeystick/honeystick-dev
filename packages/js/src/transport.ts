@@ -4,13 +4,24 @@ import {
   type ClientOptions,
   type Environment,
   type ResolvedConfig,
-} from './config';
-import { toHoneystickError } from './errors';
+} from './config.js';
+import { toHoneystickError } from './errors.js';
 
 export type Query = Record<
   string,
   string | number | boolean | null | undefined
 >;
+
+/**
+ * `fetch`'s credentials mode, spelled out rather than borrowed.
+ *
+ * The DOM lib calls this `RequestCredentials`, and using that name would make
+ * this package need the DOM lib - which it must not, because it also runs on a
+ * Node server, where a tsconfig has no business claiming `window` exists. The
+ * symptom of getting it wrong is that the Express adapter will not typecheck at
+ * all, in a file that mentions neither Express nor credentials.
+ */
+export type CredentialsMode = 'omit' | 'same-origin' | 'include';
 
 export type RequestArgs = {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -35,6 +46,11 @@ export type Transport = {
   request<T>(args: RequestArgs): Promise<T>;
   readonly environment: Environment;
   readonly orgId: string | null;
+  /** the app's own pages, for the calls that hand a customer to a provider */
+  readonly returnUrl: string | null;
+  readonly cancelUrl: string | null;
+  /** the app's own server, for the call that reports a payment settled */
+  readonly notifyUrl: string | null;
 };
 
 const withQuery = (url: string, query?: Query) => {
@@ -64,7 +80,7 @@ async function send<T>({
   method: RequestArgs['method'];
   body?: unknown;
   headers: Record<string, string>;
-  credentials?: RequestCredentials;
+  credentials?: CredentialsMode;
 }): Promise<T> {
   if (!fetchImpl) {
     throw new Error(
@@ -118,6 +134,9 @@ export function directTransport(options: ClientOptions = {}): Transport {
   return {
     environment: config.environment,
     orgId: config.orgId,
+    returnUrl: config.returnUrl,
+    cancelUrl: config.cancelUrl,
+    notifyUrl: config.notifyUrl,
     request: <T>({ method, path, query, body }: RequestArgs) =>
       send<T>({
         fetchImpl: config.fetch,
@@ -125,12 +144,11 @@ export function directTransport(options: ClientOptions = {}): Transport {
         method,
         body,
         headers: {
+          // The key is the whole credential: it names its own environment and
+          // carries the claim of which organization it belongs to, so there is
+          // nothing for the caller to assert alongside it. Which deployment
+          // answers is decided by the URL, not by a header.
           ...(config.key ? { authorization: `Bearer ${config.key}` } : {}),
-          // The environment and org travel explicitly so the server can refuse
-          // a key that does not belong to the deployment it reached, instead of
-          // quietly serving the wrong ledger.
-          'x-honeystick-environment': config.environment,
-          ...(config.orgId ? { 'x-honeystick-org-id': config.orgId } : {}),
         },
       }),
   };
@@ -148,6 +166,20 @@ export type ProxyOptions = {
   publishableKey?: string;
   orgId?: string;
   environment?: Environment;
+  /** as on the server client - your own pages, carried by `checkout` */
+  returnUrl?: string;
+  cancelUrl?: string;
+  /**
+   * Deliberately available here too, and deliberately rarely right.
+   *
+   * A browser or an app has no server for Honeystick to call back, so a
+   * notify url set on a proxy client is almost always the caller confusing
+   * "where I am" with "where my server is". It is accepted because the handler
+   * this client talks to may legitimately want the browser to name a per-tenant
+   * callback - but if you are reaching for it, check first that it should not
+   * be set on the server client instead.
+   */
+  notifyUrl?: string;
   /**
    * Send cookies with the request. Needed whenever the handler's `identify`
    * reads a session - which is the normal case - and required explicitly once
@@ -172,6 +204,9 @@ export function proxyTransport(options: ProxyOptions = {}): Transport {
   return {
     environment: options.environment ?? 'sandbox',
     orgId: options.orgId ?? null,
+    returnUrl: options.returnUrl ?? null,
+    cancelUrl: options.cancelUrl ?? null,
+    notifyUrl: options.notifyUrl ?? null,
     request: <T>({ method, path, query, body }: RequestArgs) =>
       send<T>({
         fetchImpl,

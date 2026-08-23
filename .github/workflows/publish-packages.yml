@@ -1,0 +1,149 @@
+name: Publish packages
+
+# Tags only, never a branch.
+#
+# Publishing is not idempotent - a version that exists on the registry can never
+# be replaced - so it must not be something a merge can trigger by accident. A
+# tag is a deliberate act, and it is also the thing that records which commit a
+# published version came from.
+#
+# `workflow_dispatch` is here for a re-run after a partial failure: the job
+# skips any package whose version is already on the registry, so running it
+# again finishes what a network error interrupted rather than failing on the
+# first package that succeeded.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Pack and validate without publishing'
+        required: false
+        default: 'true'
+        type: choice
+        options: ['true', 'false']
+
+# `id-token` does two jobs here, and both remove a secret from the equation.
+#
+# It is what npm's *trusted publishing* authenticates with: npm verifies an OIDC
+# token minted by this workflow against a publisher configured on the package,
+# so there is no long-lived automation token to store, leak or rotate. It is
+# also what attaches *provenance* - a signed statement of which repository,
+# workflow and commit built the tarball, verifiable by anyone with
+# `npm audit signatures`.
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish-packages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build and publish to npm
+    # GitHub-hosted, deliberately: npm refuses to attach provenance from a
+    # self-hosted runner, because the claim it signs is about a build
+    # environment npm can vouch for.
+    runs-on: ubuntu-latest
+    # Point this at a GitHub Environment with a required reviewer. Publishing is
+    # the one action in this repo that cannot be undone.
+    environment: npm
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: apps/next-store/.nvmrc
+          cache: npm
+          # sets the registry in .npmrc and wires NODE_AUTH_TOKEN to it
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing landed in npm 11.5.1, and the Node 24 line still
+      # ships something older. Without this the publish falls back to looking
+      # for a token and fails with an unhelpful 404 on a package that plainly
+      # exists.
+      - name: Ensure npm supports trusted publishing
+        run: |
+          npm install -g npm@11
+          echo "npm $(npm --version)"
+
+      - name: Install
+        run: npm ci
+
+      # `npm ci` already runs the root `prepare`, which is this. Run explicitly
+      # anyway: a publish is a bad moment to depend on a lifecycle hook firing,
+      # and dist is what actually gets uploaded.
+      - name: Build packages
+        run: npm run build
+
+      # The tag says what is being released, package.json says what will be
+      # uploaded, and a mismatch means one of them is wrong. Caught here rather
+      # than discovered as a published version nobody meant to cut.
+      - name: Check the tag matches the versions
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          FAILED=0
+          for DIR in js react react-native expo next hono express; do
+            VERSION=$(node -p "require('./packages/$DIR/package.json').version")
+            if [ "$VERSION" != "$TAG" ]; then
+              echo "::error::packages/$DIR is $VERSION but the tag is $TAG"
+              FAILED=1
+            fi
+          done
+          exit $FAILED
+
+      # Dependency order, and it matters: @honeystick/react depends on
+      # honeystick at a real semver range now, so that has to resolve on the
+      # registry before anything that needs it is published.
+      #
+      # Each package is skipped if its version is already there, which is what
+      # makes a re-run safe. `npm view` exits non-zero for a package that has
+      # never been published at all, so its failure is the create case rather
+      # than an error.
+      - name: Publish
+        env:
+          # No NODE_AUTH_TOKEN. Authentication is the OIDC token this workflow
+          # mints, matched against the trusted publisher configured on each
+          # package at npmjs.com - which has to be set up once per package
+          # before the first run, naming this repository and this workflow file.
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run || 'false' }}
+        run: |
+          set -euo pipefail
+          for DIR in js react react-native expo next hono express; do
+            NAME=$(node -p "require('./packages/$DIR/package.json').name")
+            VERSION=$(node -p "require('./packages/$DIR/package.json').version")
+
+            if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+              echo "→ $NAME@$VERSION is already published, skipping"
+              continue
+            fi
+
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "→ dry run for $NAME@$VERSION"
+              npm publish --workspace "$NAME" --provenance --access public --dry-run
+              continue
+            fi
+
+            echo "→ publishing $NAME@$VERSION"
+            npm publish --workspace "$NAME" --provenance --access public
+          done
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "| Package | Version | On registry |"
+            echo "| --- | --- | --- |"
+            for DIR in js react react-native expo next hono express; do
+              NAME=$(node -p "require('./packages/$DIR/package.json').name")
+              VERSION=$(node -p "require('./packages/$DIR/package.json').version")
+              if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+                echo "| \`$NAME\` | $VERSION | yes |"
+              else
+                echo "| \`$NAME\` | $VERSION | **no** |"
+              fi
+            done
+          } >> "$GITHUB_STEP_SUMMARY"

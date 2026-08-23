@@ -1,0 +1,12 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/js" },
+    { "path": "packages/react" },
+    { "path": "packages/react-native" },
+    { "path": "packages/next" },
+    { "path": "packages/expo" },
+    { "path": "packages/hono" },
+    { "path": "packages/express" }
+  ]
+}

@@ -2,7 +2,7 @@ import {
   createCoreHandler,
   type CoreHandlerOptions,
   type Identity,
-} from '@honeystick/js/backend';
+} from 'honeystick/backend';
 
 export type HonoHandlerOptions<ContextType = any> = Omit<
   CoreHandlerOptions,

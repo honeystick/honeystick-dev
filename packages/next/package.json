@@ -1,0 +1,58 @@
+{
+  "name": "@honeystick/next",
+  "version": "0.1.0",
+  "description": "Honeystick route handler, server client and hooks for Next.js",
+  "license": "MIT",
+  "keywords": [
+    "honeystick",
+    "billing",
+    "subscriptions",
+    "usage-based",
+    "nextjs",
+    "react",
+    "sdk"
+  ],
+  "homepage": "https://honeystick.co.za",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/honeystick/honeystick-js.git",
+    "directory": "packages/next"
+  },
+  "bugs": {
+    "url": "https://github.com/honeystick/honeystick-js/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "default": "./dist/client.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "prepublishOnly": "tsc --build"
+  },
+  "dependencies": {
+    "@honeystick/react": "^0.1.0",
+    "honeystick": "^0.1.0"
+  },
+  "peerDependencies": {
+    "next": ">=13",
+    "react": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false
+}
