@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "Demo Store",
+    "slug": "demo-store",
+    "version": "0.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "//scheme": "The app's own URL scheme. expo-router needs one for deep links, and it is also what a payment provider would need in order to return a shopper to the app rather than to a web page - see the return-URL note in the README.",
+    "scheme": "demostore",
+    "splash": {
+      "backgroundColor": "#faf7ff"
+    },
+    "//appId": "Deliberately generic. example.com is reserved by IANA for exactly this, so a sample app id can never collide with a real owner - and prebuild otherwise invents one from whoever is logged in on the machine that ran it, which puts a person's name in a public repo and in every build. Replace it with your own reverse-DNS before publishing anywhere; Google Play refuses com.example.",
+    "android": {
+      "package": "com.example.demostore"
+    },
+    "ios": {
+      "bundleIdentifier": "com.example.demostore",
+      "supportsTablet": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "//usesCleartextTraffic": "The store API is reached over plain http on the LAN, and Android has blocked cleartext by default since API 28 - so without this a development build fails every request to http://192.168.x.x with a bare 'Network request failed' and nothing pointing at the cause. It is a development affordance only: a real deployment reaches the API over https and does not need it.",
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
+      "react-native-fast-sse/plugin/build"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "//plugins-fast-sse": "Referenced by path, not by package name, and that is not a style choice. react-native-fast-sse ships no app.plugin.js at its root, so naming the bare package makes Expo load the package's runtime entry as a config plugin - which crashes `expo export` and `expo prebuild` with an ERR_INTERNAL_ASSERTION about requiring an ES module. The built plugin is at plugin/build. What it does: adds UIBackgroundModes 'fetch', forces the iOS deployment target to 15.1 (Nitro's minimum), and sets newArchEnabled on Android. All three are needed for a long-lived native SSE socket. It is a Nitro module either way, so this app needs a development build and will not run in Expo Go."
+  }
+}

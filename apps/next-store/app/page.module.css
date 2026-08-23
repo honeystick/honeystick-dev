@@ -1,0 +1,55 @@
+.wrapper {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  padding: calc(var(--spacing)) 0;
+}
+
+/* Products and services stack down the wide column; the category aside stays
+   beside both rather than beside the goods alone. min-width lets the grid track
+   shrink - without it a long product title floors the column at its own width
+   and pushes the aside off. */
+.mainColumn {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 2);
+  min-width: 0;
+}
+
+.productsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+}
+
+.sectionHeading {
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  padding-left: var(--spacing);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(176px, 100%), 1fr));
+  gap: var(--spacing);
+}
+
+.aside {
+  position: sticky;
+  top: calc(5rem + var(--spacing));
+  height: max-content;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+}
+
+@media (max-width: 767px) {
+  .aside {
+    padding-left: var(--spacing);
+  }
+
+  .wrapper {
+    grid-template-columns: 1fr;
+  }
+}

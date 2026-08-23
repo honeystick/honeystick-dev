@@ -1,0 +1,26 @@
+{
+  "name": "@honeystick/express-api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The Depot's backend - the same store logic as the Next app, on Express, and the server the Expo app talks to",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
+    "start": "tsx --env-file-if-exists=.env src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@honeystick/express": "*",
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "honeystick": "*",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^20.19.41",
+    "tsx": "^4.20.3",
+    "typescript": "^6.0.3"
+  }
+}

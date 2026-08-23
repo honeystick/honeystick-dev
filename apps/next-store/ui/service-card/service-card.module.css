@@ -1,0 +1,118 @@
+/* Three of the product grid's columns wide, so the row reads as one thing
+   rather than as a card that grew. The products beside it are ~176px tracks;
+   spanning three of those is what makes a service look like a counter. */
+.serviceCard {
+  grid-column: span 3;
+  position: relative;
+  background-color: var(--bg-secondary);
+  box-shadow: 4px 2px 8px var(--bg-secondary);
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: var(--spacing);
+  padding: var(--spacing);
+}
+
+.media {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  flex: none;
+}
+
+.mediaImage {
+  transition: transform 300ms;
+}
+
+.serviceCard:hover .mediaImage {
+  transform: scale(1.05);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) / 4);
+  min-width: 0;
+}
+
+.category {
+  text-transform: uppercase;
+  color: var(--color-secondary);
+  font-size: 0.8rem;
+}
+
+.title {
+  color: var(--color-alt);
+  font-size: 1.2rem;
+  line-height: 1.1;
+}
+
+.description {
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.pricing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex: none;
+}
+
+.price {
+  color: var(--color-alt);
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.frequency {
+  color: var(--color-secondary);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.action {
+  flex: none;
+
+  button {
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    width: calc(var(--spacing) * 2.5);
+    height: calc(var(--spacing) * 2.5);
+  }
+}
+
+/* Below the wide breakpoint the product grid has fewer than three tracks, and a
+   three-track span would invent the missing ones and overflow the page. Full
+   width is the honest answer once there is nothing to span. */
+@media (max-width: 1023px) {
+  .serviceCard {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 550px) {
+  .serviceCard {
+    grid-template-columns: auto 1fr;
+    row-gap: calc(var(--spacing) / 2);
+  }
+
+  .media {
+    width: 64px;
+    height: 64px;
+  }
+
+  .pricing {
+    align-items: flex-start;
+    grid-column: 2;
+  }
+
+  .action {
+    grid-column: 2;
+  }
+}

@@ -1,0 +1,26 @@
+.categoryWrapper {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing));
+}
+
+.categoryButtonWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) / 2);
+}
+
+.categoryButton {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background-color: var(--bg-secondary);
+  padding: calc(var(--spacing) / 3) calc(var(--spacing) / 2);
+
+}
+
+.categoryActive {
+  color: var(--color-light);
+  background-color: var(--bg-alt-dark);
+}

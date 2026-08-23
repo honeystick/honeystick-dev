@@ -1,0 +1,307 @@
+.wrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: calc(var(--spacing) * 3) var(--spacing);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 1.5);
+}
+
+/* the back control, and the warning that it is not just a back control */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-secondary);
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.back:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.backNote {
+  font-size: 0.75rem;
+  color: var(--color-secondary);
+  opacity: 0.85;
+}
+
+.title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing);
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-secondary);
+}
+
+.heading {
+  color: var(--color-primary);
+  text-transform: uppercase;
+}
+
+.status {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--bg-secondary);
+  color: var(--color-secondary);
+}
+
+/* a plan that is running is the only one worth colouring; everything else is
+   a state the shopper should read rather than be reassured by */
+.status[data-status='active'] {
+  background: var(--rainbow-green);
+  color: var(--color-light);
+}
+
+.status[data-status='cancelled'],
+.status[data-status='past-due'] {
+  background: var(--rainbow-red);
+  color: var(--color-light);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing);
+  border: 1px solid var(--bg-secondary);
+  border-top: 4px solid transparent;
+  border-image: var(--rainbow-gradient) 1;
+  padding: var(--spacing);
+}
+
+.fact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.factLabel {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-secondary);
+}
+
+.factValue {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.panel {
+  border: 1px solid var(--bg-secondary);
+  padding: var(--spacing);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+}
+
+.panelHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing);
+}
+
+.panelTitle {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+}
+
+.meter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meterHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing);
+}
+
+.meterName {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.meterCount {
+  font-size: 0.8rem;
+  color: var(--color-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.bar {
+  height: 8px;
+  background: var(--bg-secondary);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background-image: var(--rainbow-gradient);
+  transition: width 240ms ease;
+}
+
+/* at the limit the bar stops being progress and starts being a refusal */
+.barFill[data-full='true'] {
+  background-image: none;
+  background-color: var(--rainbow-red);
+}
+
+.meterActions {
+  display: flex;
+  gap: 8px;
+}
+
+.manage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ghost,
+.secondary,
+.danger {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: var(--font-weight-medium);
+  padding: 8px 16px;
+  border: 1px solid var(--color-alt);
+  background: transparent;
+  color: var(--color-secondary);
+}
+
+.secondary {
+  background: var(--bg-muted);
+  border-color: var(--bg-muted);
+  color: var(--color-light);
+}
+
+.danger {
+  background: transparent;
+  border-color: var(--rainbow-red);
+  color: var(--rainbow-red);
+}
+
+.ghost:disabled,
+.secondary:disabled,
+.danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.muted {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--color-secondary);
+}
+
+.muted code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+}
+
+.note {
+  font-size: 0.8rem;
+  color: var(--color-alt);
+}
+
+.error {
+  font-size: 0.8rem;
+  color: var(--rainbow-red);
+}
+
+/* The payment confirmation, and the only thing on this page that arrived
+   without being asked for. Coloured green rather than in the rainbow because
+   it is a state and not a decoration - the rest of the page is chrome, this is
+   news. */
+.settled {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: var(--spacing);
+  background: color-mix(in srgb, var(--rainbow-green) 12%, transparent);
+  border-left: 4px solid var(--rainbow-green);
+}
+
+.settledMark {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--rainbow-green);
+  color: var(--color-light);
+  font-size: 0.8rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.settledTitle {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.settledNote {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--color-secondary);
+}
+
+.panelActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Whether the stream is actually connected. Small, because it is diagnostic
+   rather than something a shopper needs - but present, because a stream that
+   died looks exactly like a quiet one. */
+.stream {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-secondary);
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--bg-secondary);
+}
+
+.stream[data-state='live'] {
+  color: var(--rainbow-green);
+}
+
+.stream[data-state='offline'] {
+  color: var(--rainbow-red);
+}

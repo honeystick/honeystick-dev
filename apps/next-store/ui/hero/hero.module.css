@@ -1,0 +1,120 @@
+.hero {
+  position: relative;
+  height: var(--hero-height);
+  overflow: hidden;
+  /* the dark base still shows through the wash below, so text stays readable
+     against it whatever the gradient is doing */
+  background-color: var(--bg-muted);
+  background-image: var(--rainbow-gradient);
+  background-size: 200% 100%;
+  animation: rainbow-drift 18s linear infinite;
+  z-index: 1;
+}
+
+@keyframes rainbow-drift {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 200% 50%;
+  }
+}
+
+/* a long slow drift is decoration; someone who asked for less motion should
+   get a still gradient rather than no colour */
+@media (prefers-reduced-motion: reduce) {
+  .hero {
+    animation: none;
+  }
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.contentWrapper {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.bracketWrapper {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  pointer-events: none;
+}
+
+.bracket {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+}
+
+.bracketLeft {
+  left: var(--spacing);
+}
+
+.bracketRight {
+  right: var(--spacing);
+}
+
+.heading {
+
+  color: white;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  text-align: center;
+  background-color: var(--bg-muted);
+  padding: var(--spacing) calc(var(--spacing) * 2);
+}
+
+.cta {
+  pointer-events: auto;
+  padding: var(--spacing) calc(var(--spacing) * 2);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  background-color: var(--bg-alt-light);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .hero {
+    height: max-content;
+  }
+
+  .heading {
+    margin: var(--spacing) var(--spacing) 0 var(--spacing);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    text-align: center;
+    background-color: var(--bg-muted);
+    padding: calc(var(--spacing) / 2) calc(var(--spacing));
+  }
+
+  .cta {
+    padding: calc(var(--spacing) / 2) calc(var(--spacing));
+    font-size: 1.2rem;
+  }
+
+  .bracket {
+    display: none;
+  }
+}

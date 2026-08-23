@@ -1,0 +1,15 @@
+{
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    "strict": true,
+    // The React Native base config declares `types: ["jest"]`, and this sample
+    // has no test suite to justify the dependency. Left in place it is a hard
+    // "cannot find type definition file for 'jest'" on every typecheck.
+    "types": [],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["**/node_modules", "**/Pods", "android", "ios"]
+}

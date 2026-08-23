@@ -1,0 +1,52 @@
+/* A strip rather than a card. This is scaffolding around the demo, not part of
+   the shop, so it reads as a note pinned to the page - full width, muted, and
+   visibly not merchandise. */
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing);
+  padding: calc(var(--spacing) / 1.5) var(--spacing);
+  margin-bottom: var(--spacing);
+  background-color: var(--bg-secondary);
+  border-left: 3px solid var(--color-alt);
+}
+
+.note {
+  color: var(--color-secondary);
+  font-size: 0.85rem;
+  margin: 0;
+  /* the sentence stays on one line where there is room and wraps whole where
+     there is not, rather than leaving one word stranded under the button */
+  flex: 1 1 24ch;
+}
+
+.note code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background-color: var(--bg-muted);
+  color: var(--color-light);
+  padding: 0 0.35em;
+}
+
+.button {
+  flex: none;
+  padding: calc(var(--spacing) / 2) var(--spacing);
+  background-color: var(--bg-muted);
+  color: var(--color-light);
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: background-color 200ms;
+}
+
+.button:hover:not(:disabled) {
+  background-color: var(--color-alt);
+}
+
+.button:disabled {
+  opacity: 0.64;
+  cursor: default;
+}

@@ -1,0 +1,8 @@
+/* The product grid's tracks, repeated here so a service row can be measured in
+   the same columns the goods are. Without matching tracks "span 3" would mean
+   three of some other grid's columns, which is three of nothing in particular. */
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(176px, 100%), 1fr));
+  gap: var(--spacing);
+}

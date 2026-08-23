@@ -1,0 +1,199 @@
+.cartMenuWrapper {
+  position: fixed;
+  width: 100%;
+  top: 5rem;
+  right: 0;
+  height: calc(100vh - 5rem);
+  background-color: var(--bg-alt-dark);
+  transform: translateX(100%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--color-light);
+    line-height: 1;
+  }
+}
+
+.cardPricing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+  align-items: flex-end;
+}
+
+.productCardImage {
+  min-height: 80px;
+  min-width: 80px;
+  margin-left: auto;
+}
+
+.cartMenu {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  opacity: 0;
+  min-height: 0;
+}
+
+.cartBody {
+  display: flex;
+  flex-direction: column;
+  list-style-type: none;
+  padding-left: 0;
+  padding-top: calc(var(--spacing) * 2);
+  gap: calc(var(--spacing) * 2);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.cartTitle {
+  overflow-wrap: break-word;
+  hyphens: auto;
+  font-size: 2rem;
+}
+
+.cartQuantity {
+  height: 40px;
+  width: 40px;
+  border-radius: 9999px;
+  font-size: 1.3rem;
+  line-height: 1;
+  z-index: 1;
+  background-color: var(--bg-alt-light);
+  color: var(--color-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.cartFooter {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing)/2);
+  padding-bottom: var(--spacing);
+  padding-top:  calc(var(--spacing)/2);
+  gap: calc(var(--spacing)/2);
+  background-image: linear-gradient(
+    #2c323440,
+    5%,
+    var(--bg-alt-dark)
+  );
+
+  :first-child {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing);
+
+    p {
+      font-size: 3rem;
+    }
+  }
+
+  :last-child {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing);
+
+    p {
+      font-size: 3rem;
+    }
+  }
+}
+
+.cartActions {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: calc(var(--spacing)) / 4;
+}
+
+.cartRow {
+  display: grid;
+  align-items: flex-start;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--spacing);
+}
+
+.cartEmptyWrapper {
+  padding: var(--spacing) 0;
+  display: flex;
+  justify-content: center;
+}
+
+.cartPricingRow {
+  display: flex;
+  gap: var(--spacing);
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: var(--bg-muted);
+  padding: calc(var(--spacing) / 2) var(--spacing);
+  min-width: 200px;
+}
+
+@media (max-width: 550px) {
+  .cartTitle {
+    margin-top: auto;
+    margin-bottom: auto;
+    font-size: 1.1rem;
+  }
+
+  .cartPricingRow {
+    min-width: auto;
+  }
+
+  .cartRow {
+    gap: calc(var(--spacing) / 4);
+  }
+
+  .cardPricing {
+    gap: calc(var(--spacing) / 4);
+  }
+
+  .clearCartButton {
+    padding: 4px !important;
+    height: auto;
+
+    h2 {
+      font-size: 0.9rem !important;
+      line-height: 1;
+      margin: auto 0;
+    }
+  }
+
+  .cartFooter {
+    :first-child {
+      p {
+        font-size: 2rem;
+      }
+    }
+
+    :last-child {
+      p {
+        font-size: 2rem;
+      }
+    }
+  }
+}
+/* the Checkout control is a link now, not a button - it has to keep the
+   button's block presentation so the drawer footer does not reflow */
+.checkoutLink {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  background-image: var(--rainbow-gradient);
+  color: var(--button-primary-color);
+  padding: var(--spacing);
+}

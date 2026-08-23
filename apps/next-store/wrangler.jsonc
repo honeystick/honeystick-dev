@@ -1,0 +1,69 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "honeystick-demo",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-08-08",
+
+  // nodejs_compat is required by OpenNext - Next's server half is Node code.
+  // global_fetch_strictly_public makes a fetch to this Worker's own hostname go
+  // out to the internet and come back through the router, rather than being
+  // short-circuited inside the isolate. Without it a server component fetching
+  // the store's own URL resolves to something that never reaches the route.
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+
+  // Everything in /public plus Next's build output, served by Cloudflare
+  // without waking the Worker.
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+
+  // The demo's address, as a Worker *route* rather than a custom domain.
+  //
+  // The difference decides whether a deploy succeeds. `custom_domain: true`
+  // makes Cloudflare create and own the DNS record, which collides with a
+  // record that already exists - and demo.honeystick.co.za already has a
+  // proxied AAAA. A route takes the opposite arrangement: the DNS record is
+  // yours, it only has to resolve into Cloudflare's network, and the route is
+  // what makes this Worker answer for the hostname.
+  //
+  // That is why the existing record points at a discard address behind the
+  // orange cloud. Nothing is ever fetched from it: a Worker route is handled at
+  // the edge and never reaches an origin, so the address only needs to exist so
+  // the name resolves and the proxy has something to intercept.
+  //
+  // The wildcard is not optional. A route pattern matches paths, so a bare
+  // hostname matches exactly one URL - the root - and every other path on the
+  // site would miss the Worker entirely. `custom_domain` needed no wildcard,
+  // which is the easiest thing to carry over from it by mistake.
+  //
+  // `zone_name` is required for a route and is not needed for a custom domain,
+  // so the API token has to carry Zone → Workers Routes → Edit on this zone as
+  // well as Account → Workers Scripts → Edit. The "Edit Cloudflare Workers"
+  // template includes both.
+  "routes": [
+    {
+      "pattern": "demo.honeystick.co.za/*",
+      "zone_name": "honeystick.co.za"
+    }
+  ],
+
+  "observability": {
+    "enabled": true
+  },
+
+  // Public values only. Anything here is committed to a public repo and is also
+  // readable from the deployed Worker, so it is the wrong place for a key by
+  // two separate measures.
+  //
+  // The secret goes in with `wrangler secret put HONEYSTICK_SECRET_KEY`, set
+  // once against the Worker and left alone - deploys do not touch it, which is
+  // why the CI job never needs to hold it. See DEPLOY.md.
+  "vars": {
+    "NEXT_PUBLIC_STORE_URL": "https://demo.honeystick.co.za"
+  }
+
+  // No account_id. It is not a secret, but a public repo advertising which
+  // Cloudflare account to aim at is free reconnaissance, and wrangler reads
+  // CLOUDFLARE_ACCOUNT_ID from the environment instead.
+}

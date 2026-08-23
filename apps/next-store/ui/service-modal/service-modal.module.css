@@ -1,0 +1,227 @@
+/* Deliberately the cart drawer's geometry: same offset below the header, same
+   ground, same full-height panel. Two different right-hand drawers that sat at
+   different heights would read as two different sites. */
+.wrapper {
+  position: fixed;
+  width: 100%;
+  top: 5rem;
+  right: 0;
+  height: calc(100vh - 5rem);
+  background-color: var(--bg-alt-dark);
+  transform: translateX(100%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--color-light);
+    line-height: 1.2;
+  }
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  opacity: 0;
+  min-height: 0;
+}
+
+.head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--spacing);
+  padding-top: calc(var(--spacing) * 1.5);
+}
+
+.media {
+  flex: none;
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) / 4);
+  min-width: 0;
+}
+
+.category {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+.title {
+  font-size: 2rem;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.close {
+  background: transparent;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* the cart's own close affordance, so the gesture is learned once */
+.closeIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  position: relative;
+}
+
+.closeIcon span {
+  position: absolute;
+  width: 24px;
+  height: 2px;
+  background: #fff;
+}
+
+.closeIcon span:first-child {
+  transform: rotate(45deg);
+}
+
+.closeIcon span:last-child {
+  transform: rotate(-45deg);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+  padding-top: calc(var(--spacing) * 1.5);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.description {
+  font-size: 1.1rem;
+}
+
+.benefits {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) / 2);
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.benefit {
+  color: var(--color-light);
+  display: flex;
+  gap: calc(var(--spacing) / 2);
+  align-items: flex-start;
+  padding: calc(var(--spacing) / 2) var(--spacing);
+  background-color: var(--bg-muted);
+  font-size: 0.95rem;
+}
+
+.benefit::before {
+  content: "+";
+  font-weight: 800;
+  line-height: 1.2;
+  flex: none;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) / 2);
+  padding-top: calc(var(--spacing) / 2);
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) / 4);
+  color: var(--color-light);
+}
+
+.input {
+  padding: calc(var(--spacing) * 0.75);
+  border: 1px solid var(--bg-muted);
+  border-radius: var(--radius);
+  font: inherit;
+  color: var(--color-primary);
+  background: var(--bg-primary);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--color-light);
+  outline-offset: 1px;
+}
+
+.error {
+  color: var(--color-light);
+  background-color: var(--rainbow-red);
+  padding: calc(var(--spacing) / 2) var(--spacing);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) / 2);
+  padding-bottom: var(--spacing);
+  padding-top: calc(var(--spacing) / 2);
+  background-image: linear-gradient(#2c323440, 5%, var(--bg-alt-dark));
+}
+
+.priceRow {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: calc(var(--spacing) / 2);
+}
+
+.priceRow strong {
+  font-size: 2rem;
+}
+
+.subscribe {
+  display: block;
+  width: 100%;
+  text-align: center;
+  border: none;
+  background-image: var(--rainbow-gradient);
+  color: var(--button-primary-color);
+  padding: var(--spacing);
+  cursor: pointer;
+}
+
+.subscribe[aria-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.note {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  text-align: center;
+}
+
+@media (max-width: 550px) {
+  .title {
+    font-size: 1.3rem;
+  }
+
+  .priceRow strong {
+    font-size: 1.5rem;
+  }
+}
