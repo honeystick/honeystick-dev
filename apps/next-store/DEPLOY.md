@@ -90,9 +90,16 @@ Automatic on push to `main`, when anything under `apps/next-store/**` or
 Locally:
 
 ```sh
+npm run cf:build   --workspace @honeystick/next-store   # compile the Worker
 npm run cf:preview --workspace @honeystick/next-store   # workerd, on localhost
-npm run cf:deploy  --workspace @honeystick/next-store   # build and upload
+npm run cf:deploy  --workspace @honeystick/next-store   # upload it
 ```
+
+**`cf:build` first, always.** `preview` and `deploy` both act on a *built* app
+and neither builds one — running `cf:deploy` on its own fails with "Could not
+find compiled Open Next config", which reads like a configuration problem and is
+really a missing step. The three scripts are one-to-one wrappers around the
+OpenNext CLI rather than a chain, so this is the CLI's shape rather than ours.
 
 `cf:preview` runs the real Worker runtime rather than `next dev`, which is the
 only way to catch the class of bug where something works in Node and not in

@@ -62,8 +62,17 @@ jobs:
       - name: Typecheck packages
         run: npx tsc --build
 
-      # Builds with OpenNext and uploads with wrangler in one step.
+      # Two steps, because `opennextjs-cloudflare deploy` deploys a *built* app
+      # and does not build one. Running only the deploy fails with "Could not
+      # find compiled Open Next config", which reads like a configuration
+      # problem and is actually a missing step.
       #
+      # Separate rather than chained so the logs distinguish the two failures
+      # that matter: a build that broke (your code) from an upload that was
+      # refused (the token, the route, the account).
+      - name: Build the Worker
+        run: npm run cf:build --workspace @honeystick/next-store
+
       # HONEYSTICK_SECRET_KEY is deliberately absent. It is set once against the
       # Worker with `wrangler secret put` and survives every deploy, so this job
       # never holds a billing credential - which means a leak here costs a
