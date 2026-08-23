@@ -41,39 +41,73 @@
   // so the API token has to carry Zone → Workers Routes → Edit on this zone as
   // well as Account → Workers Scripts → Edit. The "Edit Cloudflare Workers"
   // template includes both.
-  "routes": [
-    {
-      "pattern": "demo.honeystick.co.za/*",
-      "zone_name": "honeystick.co.za"
-    }
-  ],
-
   "observability": {
     "enabled": true
   },
 
   /**
-   * A second Worker from the same build, for dev-demo.honeystick.co.za.
+   * Leave variables set in the dashboard alone.
    *
-   * A wrangler *environment* rather than a second config file: same code, same
-   * bundle, different name, route and vars. `wrangler deploy --env dev` picks
-   * this; a plain `wrangler deploy` stays on the top-level production one.
+   * Without this a deploy treats `vars` below as the complete list and deletes
+   * anything on the Worker that is not in it - so a value added through the
+   * Cloudflare UI survives until the next push and then quietly disappears,
+   * which is the kind of failure you debug for an hour.
    *
-   * **Nothing is inherited.** `routes` and `vars` are not merged from the top
-   * level into a named environment - each has to be repeated in full. Omitting
-   * them deploys a Worker with no route bound and no variables set, which looks
-   * like a successful deploy that serves nothing.
+   * It is a top-level-only key: wrangler refuses it inside a named environment,
+   * so this one entry governs both Workers.
    *
-   * Secrets are per environment too: `wrangler secret put HONEYSTICK_SECRET_KEY`
-   * sets it on production only, and the dev Worker needs its own with
-   * `--env dev`. Pointing the two at different organizations is the whole
-   * reason to have two.
+   * Secrets are not affected either way. `wrangler secret put` values are never
+   * removed by a deploy - only by `wrangler secret delete` - so
+   * HONEYSTICK_SECRET_KEY was never at risk here.
    *
-   * The DNS side matches production: dev-demo needs its own proxied record in
-   * the zone, because a route only intercepts a hostname that already resolves
-   * into Cloudflare.
+   * The trade worth knowing: with this on, *removing* a var from this file no
+   * longer removes it from the Worker. Deleting one for real means doing it in
+   * the dashboard as well.
+   */
+  "keep_vars": true,
+
+  /**
+   * Both Workers, named explicitly.
+   *
+   * Production is an environment rather than the top level, which is the one
+   * structural choice here worth defending. With environments defined, a bare
+   * `wrangler deploy` is ambiguous - wrangler warns and falls through to the
+   * top level - so the shape that cannot be got wrong is: nothing deployable at
+   * the top level, and every deploy naming its target. The scripts do
+   * (`cf:deploy` is `--env production`).
+   *
+   * `vars` is repeated in both because it is **not** inheritable: omit it and
+   * that Worker deploys with no variables, which looks like a success and then
+   * fails at request time on a missing origin.
+   *
+   * `routes` is repeated for the opposite reason - it *is* inheritable, so a
+   * missing one would silently adopt the other environment's hostname.
+   *
+   * `observability`, `assets` and the compatibility settings are inheritable
+   * and deliberately live once, at the top.
+   *
+   * Secrets are per environment: `wrangler secret put HONEYSTICK_SECRET_KEY
+   * --env production` and again with `--env dev`. Pointing the two at different
+   * organizations is the whole reason to have two Workers, so that a test
+   * checkout on dev never lands in the demo organization's customer list.
+   *
+   * Each hostname needs its own proxied DNS record: a route only intercepts a
+   * name that already resolves into Cloudflare.
    */
   "env": {
+    "production": {
+      "name": "honeystick-demo",
+      "routes": [
+        {
+          "pattern": "demo.honeystick.co.za/*",
+          "zone_name": "honeystick.co.za"
+        }
+      ],
+      "vars": {
+        "NEXT_PUBLIC_STORE_URL": "https://demo.honeystick.co.za"
+      }
+    },
+
     "dev": {
       "name": "honeystick-demo-dev",
       "routes": [
@@ -82,24 +116,10 @@
           "zone_name": "honeystick.co.za"
         }
       ],
-      "observability": {
-        "enabled": true
-      },
       "vars": {
         "NEXT_PUBLIC_STORE_URL": "https://dev-demo.honeystick.co.za"
       }
     }
-  },
-
-  // Public values only. Anything here is committed to a public repo and is also
-  // readable from the deployed Worker, so it is the wrong place for a key by
-  // two separate measures.
-  //
-  // The secret goes in with `wrangler secret put HONEYSTICK_SECRET_KEY`, set
-  // once against the Worker and left alone - deploys do not touch it, which is
-  // why the CI job never needs to hold it. See DEPLOY.md.
-  "vars": {
-    "NEXT_PUBLIC_STORE_URL": "https://demo.honeystick.co.za"
   }
 
   // No account_id. It is not a secret, but a public repo advertising which

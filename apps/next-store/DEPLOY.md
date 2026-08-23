@@ -59,9 +59,14 @@ public repo and a token in play, that is cheap insurance.
 
 ```sh
 cd apps/next-store
-npx wrangler secret put HONEYSTICK_SECRET_KEY              # demo
-npx wrangler secret put HONEYSTICK_SECRET_KEY --env dev    # dev-demo
+npx wrangler secret put HONEYSTICK_SECRET_KEY --env production   # demo
+npx wrangler secret put HONEYSTICK_SECRET_KEY --env dev          # dev-demo
 ```
+
+Both Workers are named environments, so **every** command needs `--env`. There
+is deliberately nothing deployable at the top level: with environments defined,
+a bare `wrangler deploy` is ambiguous, and the shape that cannot be got wrong is
+one where every command names its target.
 
 **Secrets are per environment**, so that is two commands and not one. Pointing
 them at different organizations is the reason to have two Workers at all — a
@@ -88,8 +93,8 @@ Two Workers come out of this repo, from one build:
 
 | Hostname | Worker | Deployed by |
 | --- | --- | --- |
-| `demo.honeystick.co.za` | `honeystick-demo` | `cf:deploy` |
-| `dev-demo.honeystick.co.za` | `honeystick-demo-dev` | `cf:deploy:dev` |
+| `demo.honeystick.co.za` | `honeystick-demo` | `cf:deploy` (`--env production`) |
+| `dev-demo.honeystick.co.za` | `honeystick-demo-dev` | `cf:deploy:dev` (`--env dev`) |
 
 Both are **Worker routes**, not custom domains, so each hostname needs a DNS
 record that already exists and is **proxied** (orange cloud). The convention is
@@ -119,9 +124,10 @@ before production is touched.
 Locally:
 
 ```sh
-npm run cf:build   --workspace @honeystick/next-store   # compile the Worker
-npm run cf:preview --workspace @honeystick/next-store   # workerd, on localhost
-npm run cf:deploy  --workspace @honeystick/next-store   # upload it
+npm run cf:build      --workspace @honeystick/next-store   # compile the Worker
+npm run cf:preview    --workspace @honeystick/next-store   # workerd, on localhost
+npm run cf:deploy     --workspace @honeystick/next-store   # upload to demo
+npm run cf:deploy:dev --workspace @honeystick/next-store   # upload to dev-demo
 ```
 
 **`cf:build` first, always.** `preview` and `deploy` both act on a *built* app
@@ -133,6 +139,22 @@ OpenNext CLI rather than a chain, so this is the CLI's shape rather than ours.
 `cf:preview` runs the real Worker runtime rather than `next dev`, which is the
 only way to catch the class of bug where something works in Node and not in
 workerd. Add `:dev` to either script to act on the dev Worker instead.
+
+### `keep_vars` and what a deploy overwrites
+
+`keep_vars: true` is set at the top level, which is the only place wrangler
+allows it — it cannot go inside a named environment, so the one entry governs
+both Workers.
+
+It stops a deploy from deleting plain-text variables that were added through the
+Cloudflare dashboard and are not in `wrangler.jsonc`. Without it those survive
+until the next push and then quietly disappear.
+
+It has nothing to do with secrets. `wrangler secret put` values are never
+removed by a deploy, only by `wrangler secret delete`.
+
+The trade: with it on, *removing* a var from the config no longer removes it
+from the Worker. Deleting one for real means doing it in the dashboard too.
 
 ### Do not deploy from your laptop
 
