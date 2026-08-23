@@ -52,6 +52,45 @@
     "enabled": true
   },
 
+  /**
+   * A second Worker from the same build, for dev-demo.honeystick.co.za.
+   *
+   * A wrangler *environment* rather than a second config file: same code, same
+   * bundle, different name, route and vars. `wrangler deploy --env dev` picks
+   * this; a plain `wrangler deploy` stays on the top-level production one.
+   *
+   * **Nothing is inherited.** `routes` and `vars` are not merged from the top
+   * level into a named environment - each has to be repeated in full. Omitting
+   * them deploys a Worker with no route bound and no variables set, which looks
+   * like a successful deploy that serves nothing.
+   *
+   * Secrets are per environment too: `wrangler secret put HONEYSTICK_SECRET_KEY`
+   * sets it on production only, and the dev Worker needs its own with
+   * `--env dev`. Pointing the two at different organizations is the whole
+   * reason to have two.
+   *
+   * The DNS side matches production: dev-demo needs its own proxied record in
+   * the zone, because a route only intercepts a hostname that already resolves
+   * into Cloudflare.
+   */
+  "env": {
+    "dev": {
+      "name": "honeystick-demo-dev",
+      "routes": [
+        {
+          "pattern": "dev-demo.honeystick.co.za/*",
+          "zone_name": "honeystick.co.za"
+        }
+      ],
+      "observability": {
+        "enabled": true
+      },
+      "vars": {
+        "NEXT_PUBLIC_STORE_URL": "https://dev-demo.honeystick.co.za"
+      }
+    }
+  },
+
   // Public values only. Anything here is committed to a public repo and is also
   // readable from the deployed Worker, so it is the wrong place for a key by
   // two separate measures.

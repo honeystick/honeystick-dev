@@ -1,4 +1,4 @@
-# Deploying The Depot to demo.honeystick.co.za
+# Deploying The Depot
 
 The store runs as a Cloudflare Worker via [OpenNext](https://opennext.js.org/cloudflare).
 Pushing to `main` deploys it; everything below is the one-time setup.
@@ -59,8 +59,14 @@ public repo and a token in play, that is cheap insurance.
 
 ```sh
 cd apps/next-store
-npx wrangler secret put HONEYSTICK_SECRET_KEY
+npx wrangler secret put HONEYSTICK_SECRET_KEY              # demo
+npx wrangler secret put HONEYSTICK_SECRET_KEY --env dev    # dev-demo
 ```
+
+**Secrets are per environment**, so that is two commands and not one. Pointing
+them at different organizations is the reason to have two Workers at all — a
+test checkout on dev-demo then never appears in the demo organization's customer
+list.
 
 Set once, and it survives every subsequent deploy. That is why the CI job never
 receives it: a leaked `CLOUDFLARE_API_TOKEN` costs you a redeploy, not an
@@ -76,16 +82,39 @@ the demo: the store falls back to the sample catalogue in
 `lib/catalogue/plans.ts`, and both checkout and subscribe stop short of the one
 call that needs an organization. A visitor still walks the whole flow.
 
-### 4. The custom domain
+### 4. DNS for both hostnames
 
-`wrangler.jsonc` claims `demo.honeystick.co.za` as a `custom_domain`, so
-Cloudflare creates and manages the DNS record on the first deploy. The zone has
-to be on the same account as the Worker.
+Two Workers come out of this repo, from one build:
+
+| Hostname | Worker | Deployed by |
+| --- | --- | --- |
+| `demo.honeystick.co.za` | `honeystick-demo` | `cf:deploy` |
+| `dev-demo.honeystick.co.za` | `honeystick-demo-dev` | `cf:deploy:dev` |
+
+Both are **Worker routes**, not custom domains, so each hostname needs a DNS
+record that already exists and is **proxied** (orange cloud). The convention is
+a placeholder the Worker never actually fetches from — an `AAAA` to a discard
+address is what `demo` already uses. Copy it for `dev-demo`.
+
+A route only intercepts a name that resolves into Cloudflare's network, so
+without the record the deploy succeeds and the hostname serves nothing. That is
+also why `custom_domain: true` is wrong here: it makes Cloudflare create and own
+the record, which collides with one you already have.
 
 ## Deploying
 
 Automatic on push to `main`, when anything under `apps/next-store/**` or
 `packages/**` changes. `workflow_dispatch` runs it by hand.
+
+Both Workers go out on every run, from a single build, dev first. They can share
+a build because the only difference between them is `NEXT_PUBLIC_STORE_URL`,
+which is read in `'use server'` files and therefore resolves from the Worker's
+`vars` at request time rather than being inlined by `next build`. A value used
+in a *client* component could not be shared this way and would need a build
+each.
+
+Dev is deployed first so that a deploy which is going to fail has already failed
+before production is touched.
 
 Locally:
 
@@ -103,7 +132,20 @@ OpenNext CLI rather than a chain, so this is the CLI's shape rather than ours.
 
 `cf:preview` runs the real Worker runtime rather than `next dev`, which is the
 only way to catch the class of bug where something works in Node and not in
-workerd.
+workerd. Add `:dev` to either script to act on the dev Worker instead.
+
+### Do not deploy from your laptop
+
+Or if you do, know what you are shipping. OpenNext bakes whatever is in
+`.env.local` into `.open-next/cloudflare/next-env.mjs`, which travels inside the
+Worker bundle — so a local build puts your development secret key in the
+deployed artifact. It does not take effect (bindings are applied first, and the
+baked values are a `??=` fallback), but it is present and readable by anyone who
+can download the Worker.
+
+A CI build has no `.env.local`, so it bakes `export const production = {}` and
+the Worker secret is the only source. That is the clean path, and it is the one
+the workflow uses.
 
 ## Only this app deploys
 

@@ -9,7 +9,7 @@ This repo has two jobs, and both run from GitHub Actions:
 | | What | When |
 | --- | --- | --- |
 | **Publish the SDKs to npm** | the seven `packages/*` | pushing a `v*` tag |
-| **Deploy the demo** | `apps/next-store` → Cloudflare Workers at [demo.honeystick.co.za](https://demo.honeystick.co.za) | pushing to `main` |
+| **Deploy the demo** | `apps/next-store` → two Cloudflare Workers, [demo.honeystick.co.za](https://demo.honeystick.co.za) and `dev-demo.honeystick.co.za` | pushing to `main` |
 
 Nothing else deploys or publishes. The other four apps are read-and-copy
 samples that run locally.
@@ -310,9 +310,17 @@ release before cutting the tag.
 ### Deploying the demo — `deploy-demo.yml`
 
 Triggered by a push to `main` touching `apps/next-store/**`, `packages/**` or the
-lockfile. `apps/next-store/DEPLOY.md` has the one-time setup — the API token, the
-route, and why the Honeystick key is set against the Worker rather than handed
-to CI. It also covers deploying to Vercel instead, which works with no code
-change.
+lockfile. It builds once and deploys **two** Workers — `dev-demo` first, then
+`demo` — as wrangler environments off the same bundle. They can share a build
+because the only thing that differs is `NEXT_PUBLIC_STORE_URL`, which is read
+server-side and so resolves from each Worker's `vars` at request time.
+
+Each Worker holds its own `HONEYSTICK_SECRET_KEY`, set with
+`wrangler secret put --env …`, so dev-demo can point at a scratch organization
+and its test checkouts never reach the demo one.
+
+`apps/next-store/DEPLOY.md` has the one-time setup — the API token, the DNS
+records both hostnames need, and why a local build must not be deployed. It also
+covers deploying to Vercel instead, which works with no code change.
 
 Changes to `react-store`, `expo-store` or `rn-store` deploy nothing.
