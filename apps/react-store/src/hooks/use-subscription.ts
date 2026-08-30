@@ -10,7 +10,7 @@ import { useLocalStorage } from './use-local-storage';
  * page was holding in memory is gone by then - so the plan id goes to
  * localStorage before the redirect and /account reads it on the way back.
  *
- * It is a demo's answer to identity and not a real one. The Depot has no
+ * It is a demo's answer to identity and not a real one. Honeystick Example App has no
  * accounts: nobody signs in, so nothing on the server knows this browser from
  * any other. In an app with accounts the plan would be found from the session -
  * `identify` on the mounted handler exists for exactly that - and none of this

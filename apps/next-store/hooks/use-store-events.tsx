@@ -97,6 +97,37 @@ export function useStoreEvents({
     });
 
     /**
+     * Everything Honeystick delivers over a registered webhook endpoint.
+     *
+     * All sixteen events arrive on this one frame name - `usage.limit_reached`,
+     * `subscription.cancelled`, the rest - with the real name inside the
+     * payload. One listener rather than sixteen for the same reason the server
+     * publishes one variant rather than sixteen: an event added to Honeystick
+     * later should reach this client without it being rebuilt.
+     *
+     * Registered explicitly, and it has to be. `EventSource` dispatches by
+     * name, so a frame nobody listened for is received and dropped without a
+     * word - the failure this file's other comment warns about, and the exact
+     * way this would have looked connected while showing nothing.
+     */
+    source.addEventListener('honeystick', (event) => {
+      // the frame is a nudge; the SDK does the read, so a usage meter on screen
+      // refetches and updates itself off the back of this
+      void queryClient.invalidateQueries({ queryKey: ['honeystick'] });
+      setStatus('live');
+
+      let data: unknown = null;
+      try {
+        data = JSON.parse((event as MessageEvent).data);
+      } catch {
+        data = (event as MessageEvent).data;
+      }
+      const name =
+        (data as { event?: string } | null)?.event ?? 'honeystick';
+      setLastEvent({ name, data, at: Date.now() });
+    });
+
+    /**
      * No reconnection logic, on purpose.
      *
      * `EventSource` reconnects by itself with its own backoff, and an error is

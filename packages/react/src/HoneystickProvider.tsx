@@ -3,7 +3,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useMemo, useRef, type ReactNode } from 'react';
 
-import { createHoneystickClient, DEFAULT_PATH_PREFIX } from 'honeystick';
+import {
+  createHoneystickClient,
+  DEFAULT_PATH_PREFIX,
+  type Environment,
+} from 'honeystick';
 
 import { HoneystickContext, type HoneystickContextValue } from './HoneystickContext.js';
 
@@ -25,6 +29,20 @@ export type HoneystickProviderProps = {
   headers?: Record<string, string>;
   /** Safe to ship. A secret key must never appear here. */
   publishableKey?: string;
+  /**
+   * Which Honeystick environment this app is a client of: 'sandbox' or 'live'.
+   *
+   * It does not choose a URL. A client holds no key and never calls the
+   * Honeystick API - every call goes to the handler on your own server, and
+   * that handler's secret key is what actually decides which environment
+   * answers. This is here so a client can *say* which one it believes it is
+   * talking to, which is worth having when one app is built twice against two
+   * backends and something has to be able to tell them apart.
+   *
+   * There is deliberately no `deployment` prop to go with it. That one picks a
+   * hostname, and picking a hostname is a thing only the server half does.
+   */
+  environment?: Environment;
   /**
    * The fetch to call with. Defaults to the global one.
    *
@@ -53,6 +71,7 @@ export const HoneystickProvider = ({
   includeCredentials,
   headers,
   publishableKey,
+  environment,
   fetch,
 }: HoneystickProviderProps) => {
   const queryClientRef = useRef<QueryClient | null>(null);
@@ -77,6 +96,7 @@ export const HoneystickProvider = ({
         includeCredentials,
         headers,
         publishableKey,
+        environment,
         fetch,
       }),
     }),
@@ -85,6 +105,7 @@ export const HoneystickProvider = ({
       pathPrefix,
       includeCredentials,
       publishableKey,
+      environment,
       fetch,
       JSON.stringify(headers),
     ],

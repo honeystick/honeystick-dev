@@ -1,4 +1,4 @@
-# The Depot, on bare React Native
+# Honeystick Example App, on bare React Native
 
 The same store as `apps/next-store` and `apps/expo-store`, built on
 `@honeystick/react-native` with **no Expo anywhere** — no Expo SDK, no
@@ -28,14 +28,14 @@ npm run -w @honeystick/rn-store android
 
 ## What is worth reading
 
-| File | Why |
-| --- | --- |
-| `src/App.tsx` | the provider, and the only thing the SDK asks of a native app |
-| `src/components/service-sheet.tsx` | subscribing: one call, identified by email |
-| `src/screens/account-screen.tsx` | usage, card update, cancel — all SDK, no store endpoint |
-| `src/navigation.ts` | how `depotstore://` becomes the account screen |
-| `src/hooks/use-store-events.tsx` | the SSE stream, and the four things `react-native-fast-sse` does differently from `EventSource` |
-| `metro.config.js` | the four settings a monorepo needs |
+| File                               | Why                                                                                             |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `src/App.tsx`                      | the provider, and the only thing the SDK asks of a native app                                   |
+| `src/components/service-sheet.tsx` | subscribing: one call, identified by email                                                      |
+| `src/screens/account-screen.tsx`   | usage, card update, cancel — all SDK, no store endpoint                                         |
+| `src/navigation.ts`                | how `depotstore://` becomes the account screen                                                  |
+| `src/hooks/use-store-events.tsx`   | the SSE stream, and the four things `react-native-fast-sse` does differently from `EventSource` |
+| `metro.config.js`                  | the four settings a monorepo needs                                                              |
 
 ## The subscription flow
 
@@ -117,7 +117,7 @@ one.
   is readable by anyone who has the app, so a secret key compiled into one is a
   published key. This app needs none: the Express server holds it and attaches
   it as calls pass through `/billing`.
-- **The account screen trusts a stored plan id to decide *which* plan to ask
+- **The account screen trusts a stored plan id to decide _which_ plan to ask
   about.** That is fine, because the server decides whether the asking is
   allowed. It is not an identity model — in an app with accounts the plan comes
   from the session, via the handler's `identify`.

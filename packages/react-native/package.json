@@ -30,6 +30,7 @@
     }
   },
   "files": [
+    "assets",
     "dist",
     "src",
     "README.md",

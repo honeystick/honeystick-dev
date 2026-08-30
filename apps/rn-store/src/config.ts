@@ -22,6 +22,19 @@
 export const API_URL = 'http://localhost:4000';
 
 /**
+ * Where the Honeystick badge points: the Honeystick **app**.
+ *
+ * A constant for the same reason API_URL is one - bare React Native inlines no
+ * environment without a config library and a native rebuild to go with it. Set
+ * it to http://localhost:8081 while the app runs here (a LAN IP from a device),
+ * https://dev.honeystick.co.za for preview, https://honeystick.co.za for live.
+ *
+ * Not `HONEYSTICK_URL`, which is the API a server calls. Leave it undefined and
+ * the badge falls back to Honeystick's own site.
+ */
+export const HONEYSTICK_APP_URL: string | undefined = undefined;
+
+/**
  * The app's own URL scheme, and the only place it is written down in JS.
  *
  * It has to agree with three other things or the payment never comes back:

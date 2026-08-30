@@ -2,8 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Depot</title>
+    <!-- viewport-fit=cover is what makes env(safe-area-inset-*) resolve to
+         anything but 0, which the Honeystick FAB relies on to clear the
+         home indicator. Without it the CSS is correct and inert. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Honeystick Example App</title>
   </head>
   <body>
     <div id="root"></div>

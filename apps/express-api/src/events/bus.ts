@@ -22,6 +22,8 @@
  * limited.
  */
 
+import type { HoneystickWebhookEventName } from 'honeystick';
+
 export type StoreEvent =
   /** the stream is open - carries nothing, and costs nothing to produce */
   | { type: 'ready' }
@@ -45,6 +47,30 @@ export type StoreEvent =
       planId: number | null;
       reference: string | null;
       status: string | null;
+    }
+  /**
+   * Anything Honeystick told this store about, over a registered webhook.
+   *
+   * One variant rather than sixteen, and that is a deliberate trade. The
+   * alternative - a named variant per event - would let a client `switch` with
+   * the compiler checking every branch, and would also mean that the day
+   * Honeystick adds an event, this union stops compiling and the store stops
+   * forwarding an event it understood perfectly well. The name travels as data
+   * so a new one arrives as data too.
+   *
+   * `deliveryId` is the webhook's own id and is stable across retries, so a
+   * client that reconnects and hears the same thing twice can drop the second.
+   * That matters more here than it looks: Honeystick retries a delivery four
+   * times, and the fast path and the stream can both carry the same one.
+   */
+  | {
+      type: 'honeystick';
+      event: HoneystickWebhookEventName | (string & {});
+      deliveryId: string;
+      /** when Honeystick raised it, not when this store heard about it */
+      at: string;
+      environment: 'sandbox' | 'live';
+      data: Record<string, unknown>;
     }
   | { type: 'demo.reset' };
 

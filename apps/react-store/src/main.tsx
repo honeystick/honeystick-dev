@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { HoneystickFab, HoneystickProvider } from '@honeystick/react';
 
-import { API_URL } from './config';
+import { API_URL, HONEYSTICK_APP_URL } from './config';
 import { CartProvider } from './hooks/use-cart';
 import AccountPage from './pages/account';
 import CartPage from './pages/cart';
@@ -14,7 +14,7 @@ import ShopPage from './pages/shop';
 import './index.css';
 
 /**
- * The Depot, as a plain React SPA.
+ * Honeystick Example App, as a plain React SPA.
  *
  * `HoneystickProvider` is `@honeystick/react`'s, the same one the Next store
  * uses through `@honeystick/next/client`. Two props matter here and both are
@@ -47,7 +47,9 @@ createRoot(document.getElementById('root')!).render(
           {/* Every route, from the root. The point of a mark is that it is
               always in the same place - a shopper who noticed it on the account
               page and cannot find it on the shop floor has learnt nothing. */}
-          <HoneystickFab />
+          {/* Passed rather than read inside the SDK: Vite publishes through
+              `import.meta.env`, which a file Metro also parses cannot touch. */}
+          <HoneystickFab href={HONEYSTICK_APP_URL} />
         </BrowserRouter>
       </CartProvider>
     </HoneystickProvider>

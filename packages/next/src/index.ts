@@ -4,8 +4,21 @@ import {
   type Identity,
 } from 'honeystick/backend';
 import { createHoneystick, type ClientOptions, type Honeystick } from 'honeystick';
+import {
+  HoneystickWebhookError,
+  verifyWebhook,
+  type HoneystickWebhookEvent,
+} from 'honeystick/webhooks';
 
 export type { Identity } from 'honeystick/backend';
+export {
+  HONEYSTICK_WEBHOOK_EVENTS,
+  HoneystickWebhookError,
+  isKnownWebhookEvent,
+  verifyWebhook,
+  type HoneystickWebhookEvent,
+  type HoneystickWebhookEventName,
+} from 'honeystick/webhooks';
 
 /**
  * A Next request, described structurally rather than imported.
@@ -123,9 +136,90 @@ export function honeystick(options: ClientOptions = {}): Honeystick {
 export {
   API_URLS,
   DEFAULT_PATH_PREFIX,
+  DEV_API_URLS,
   HoneystickError,
+  apiOrigin,
   createHoneystick,
   type ClientOptions,
+  type Deployment,
   type Environment,
   type Honeystick,
 } from 'honeystick';
+
+/**
+ * Receiving Honeystick's webhooks, on one route of your Next app.
+ *
+ * The other direction to `honeystickHandler`: that forwards your browser's
+ * calls *to* Honeystick, this accepts the calls Honeystick makes *to you* for
+ * an endpoint you registered in the dashboard.
+ *
+ * ```ts
+ * // app/api/honeystick/webhook/route.ts
+ * import { honeystickWebhook } from '@honeystick/next';
+ *
+ * export const { POST } = honeystickWebhook({
+ *   secret: process.env.HONEYSTICK_WEBHOOK_SECRET!,
+ *   on: async (event) => {
+ *     switch (event.event) {
+ *       case 'usage.limit_reached':
+ *         await warnTheCustomer(event.data);
+ *         break;
+ *     }
+ *   },
+ * });
+ * ```
+ *
+ * `request.text()` is what makes this correct, and it is the whole reason this
+ * wrapper exists rather than a paragraph of documentation. The signature covers
+ * the bytes that were sent; `await request.json()` would hand you an object
+ * whose re-serialisation is *not* guaranteed to be those bytes, and the failure
+ * is a signature mismatch on a delivery that was perfectly genuine.
+ *
+ * ## What it answers, and why it matters
+ *
+ * - **200** once your handler resolves.
+ * - **400** if verification fails. Honeystick treats 4xx as final and will not
+ *   retry, which is right: a bad signature will still be bad in ten minutes.
+ * - **500** if your handler throws - which *is* retried, with backoff, up to
+ *   four times. So throwing is the correct way to say "I could not deal with
+ *   this yet"; swallowing an error tells Honeystick it landed.
+ *
+ * Your handler is awaited before the response. Honeystick's delivery timeout is
+ * ten seconds, so anything slower than that belongs on your own queue - take
+ * the delivery, write it down, answer, and work afterwards.
+ */
+export function honeystickWebhook(options: {
+  /** the endpoint's signing secret from the dashboard, `whsec_...` */
+  secret: string;
+  on: (event: HoneystickWebhookEvent) => void | Promise<void>;
+  /** how old a delivery may be, in seconds. Default 300. */
+  toleranceSeconds?: number;
+}): { POST: (request: Request) => Promise<Response> } {
+  const POST = async (request: Request): Promise<Response> => {
+    let event: HoneystickWebhookEvent;
+    try {
+      event = await verifyWebhook({
+        body: await request.text(),
+        headers: request.headers,
+        secret: options.secret,
+        toleranceSeconds: options.toleranceSeconds,
+      });
+    } catch (error) {
+      const reason =
+        error instanceof HoneystickWebhookError ? error.reason : 'invalid';
+      return Response.json(
+        { ok: false, error: (error as Error).message, reason },
+        { status: 400 },
+      );
+    }
+
+    // Deliberately outside the try above. A throw from here is the caller's
+    // code failing, not a forged delivery, and the two must not answer alike:
+    // one should be retried and the other never should.
+    await options.on(event);
+
+    return Response.json({ ok: true, received: event.id }, { status: 200 });
+  };
+
+  return { POST };
+}

@@ -1,33 +1,28 @@
 'use client';
 
-import { useState, type CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
+
+import {
+  HoneystickBadge,
+  type HoneystickBadgeProps,
+} from './HoneystickBadge.js';
 
 /**
- * The way back to Honeystick, from anywhere in an app that bills through it.
+ * The Honeystick badge, pinned to a corner of the viewport.
  *
- * It lives in the SDK rather than in each sample for the reason any brand mark
- * does: the point is that it is the *same* mark in every integration, and four
- * copies of it in four stores is four things to drift. A caller who wants a
- * different one is not blocked - this is an ordinary component and the whole
- * thing is 60 lines - but nobody has to build one to get a good default.
- *
- * Self-contained on purpose. No stylesheet to import, no icon file to copy
- * next to it, no CSS custom properties inherited from a host that may not
- * define them: an SDK component that needs three other things installed before
- * it renders correctly is a component people give up on. The mark below is the
- * Honeystick brackets, inline, and the hover state is React rather than a
- * `:hover` rule, because injecting a stylesheet from a component is how two
- * copies of a package start fighting over one selector.
+ * `HoneystickBadge` with a position on it, and nothing else. The pill, the
+ * mark, the colours and the link all live there - which is what lets the same
+ * badge sit in a header (see the Depot's) and float over a page without the two
+ * being able to drift apart.
  */
-
-export type HoneystickFabProps = {
-  /** where it goes. Defaults to Honeystick's own site. */
-  href?: string;
-  /** the text that appears alongside the mark on hover */
-  label?: string;
+export type HoneystickFabProps = Omit<HoneystickBadgeProps, 'style'> & {
   /** which corner it sits in */
   position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
-  /** how far from the two edges of that corner, in pixels */
+  /**
+   * How far from the two edges of that corner, in pixels. The device's own
+   * safe-area inset is added to it rather than replaced by it, so this stays
+   * the gap you actually see on a phone with a home indicator.
+   */
   offset?: number;
   /**
    * Stacking order. High by default because the whole job is being reachable
@@ -38,97 +33,60 @@ export type HoneystickFabProps = {
   style?: CSSProperties;
 };
 
+/**
+ * Which corner, and nothing about direction.
+ *
+ * These used to flip to `row-reverse` on the right-hand corners so that a label
+ * expanding on hover grew inward, away from the screen edge. Nothing expands
+ * now - the badge is one fixed size - and "Billing by" has to come before the
+ * mark it hands off to, in every corner, because reversing it would render the
+ * logo first and leave the sentence backwards.
+ */
 const CORNERS: Record<
   NonNullable<HoneystickFabProps['position']>,
   CSSProperties
 > = {
-  'bottom-right': { bottom: 0, right: 0, flexDirection: 'row-reverse' },
-  'bottom-left': { bottom: 0, left: 0, flexDirection: 'row' },
-  'top-right': { top: 0, right: 0, flexDirection: 'row-reverse' },
-  'top-left': { top: 0, left: 0, flexDirection: 'row' },
+  'bottom-right': { bottom: 0, right: 0 },
+  'bottom-left': { bottom: 0, left: 0 },
+  'top-right': { top: 0, right: 0 },
+  'top-left': { top: 0, left: 0 },
 };
 
-/** the Honeystick brackets, as markup rather than as a file to go and fetch */
-const Mark = () => (
-  <svg
-    width="18"
-    height="16"
-    viewBox="0 0 37.374 33.701"
-    aria-hidden="true"
-    focusable="false"
-    style={{ display: 'block', flexShrink: 0 }}
-  >
-    <g fill="currentColor">
-      <rect width="16.314" height="4.897" x="10.53" y="9.574" />
-      <rect width="16.314" height="4.897" x="10.53" y="19.163" />
-      <path d="M4.9 0H0v33.7h14.75v-4.9H4.9V4.9h9.85V0Z" />
-      <path d="M32.478 0H22.352v4.9h10.126v23.9H22.352v4.9h15.022V0Z" />
-    </g>
-  </svg>
-);
-
 export const HoneystickFab = ({
-  href = 'https://honeystick.co.za',
-  label = 'Billing by Honeystick',
   position = 'bottom-right',
   offset = 24,
   zIndex = 900,
   style,
-}: HoneystickFabProps) => {
-  const [hovered, setHovered] = useState(false);
-  const corner = CORNERS[position];
-
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noreferrer noopener"
-      aria-label={label}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocus={() => setHovered(true)}
-      onBlur={() => setHovered(false)}
-      style={{
-        position: 'fixed',
-        ...corner,
-        // the corner object pins two edges at 0; the offset pushes it off both
-        margin: offset,
-        zIndex,
-        display: 'flex',
-        alignItems: 'center',
-        gap: hovered ? 8 : 0,
-        height: 48,
-        padding: hovered ? '0 18px' : 0,
-        width: hovered ? 'auto' : 48,
-        justifyContent: 'center',
-        borderRadius: 999,
-        // the same rainbow the stores use, so the mark reads as belonging to
-        // the same family without the host having to define a variable
-        backgroundImage:
-          'linear-gradient(120deg, #6b5ce7, #b45cff 55%, #2f9bff)',
-        color: '#ffffff',
-        textDecoration: 'none',
-        fontSize: 13,
-        fontWeight: 600,
-        fontFamily: 'inherit',
-        whiteSpace: 'nowrap',
-        boxShadow: hovered
-          ? '0 12px 28px rgba(43, 36, 64, 0.34)'
-          : '0 6px 18px rgba(43, 36, 64, 0.24)',
-        transform: hovered ? 'translateY(-2px)' : 'none',
-        // `width` and `padding` are in the transition on purpose - without them
-        // the label appears by snapping the button to its new size, which reads
-        // as a layout bug rather than as an expansion
-        transition:
-          'width 180ms ease, padding 180ms ease, gap 180ms ease, box-shadow 180ms ease, transform 180ms ease',
-        overflow: 'hidden',
-        ...style,
-      }}
-    >
-      <Mark />
-      {/* rendered only when open, so a collapsed button has nothing to clip
-          and screen readers get the label from aria-label either way */}
-      {hovered && <span>{label}</span>}
-    </a>
-  );
-};
+  ...badge
+}: HoneystickFabProps) => (
+  <HoneystickBadge
+    {...badge}
+    style={{
+      position: 'fixed',
+      ...CORNERS[position],
+      /**
+       * The corner object pins two edges at 0; these push it off both.
+       *
+       * `env(safe-area-inset-*)` is added rather than assumed, because the two
+       * are answering different questions: `offset` is the gap the design
+       * wants, and the inset is the part of the screen the hardware has already
+       * taken - a home indicator, a notch, a rounded corner. A FAB that only
+       * honours the first sits *under* the home indicator on an iPhone in a
+       * standalone PWA, where it is both unreadable and, on the bottom edge,
+       * un-tappable because the system claims that gesture.
+       *
+       * The `0px` fallback matters: `env()` with no fallback resolves to
+       * nothing on a browser that does not know the keyword, which makes the
+       * whole `calc()` invalid and drops the offset entirely. It is also 0 on
+       * any page whose viewport meta lacks `viewport-fit=cover`, which is the
+       * host's call to make and not this component's.
+       */
+      marginTop: `calc(${offset}px + env(safe-area-inset-top, 0px))`,
+      marginBottom: `calc(${offset}px + env(safe-area-inset-bottom, 0px))`,
+      marginLeft: `calc(${offset}px + env(safe-area-inset-left, 0px))`,
+      marginRight: `calc(${offset}px + env(safe-area-inset-right, 0px))`,
+      zIndex,
+      ...style,
+    }}
+  />
+);

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "The Depot as a plain React SPA - @honeystick/react against the Express API, with no framework server of its own",
+  "description": "Honeystick Example App as a plain React SPA - @honeystick/react against the Express API, with no framework server of its own",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

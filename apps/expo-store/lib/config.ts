@@ -27,5 +27,21 @@ export const API_URL = configured ?? 'http://localhost:4000';
 
 export const isApiUrlConfigured = !!configured;
 
+/**
+ * Where the Honeystick badge points: the Honeystick **app**.
+ *
+ * honeystick.co.za in production, dev.honeystick.co.za on preview, and
+ * localhost:8081 when it is running on this machine. Three similar names worth
+ * keeping apart - this one is the app a person is sent to, `HONEYSTICK_URL` is
+ * the API a server calls, and a demo store's own address is neither.
+ *
+ * Undefined is supported: the badge falls back to Honeystick's own site, which
+ * is the right answer for anyone who cloned this and has no deployment.
+ */
+export const HONEYSTICK_APP_URL = process.env.EXPO_PUBLIC_HS_APP_URL?.replace(
+  /\/+$/,
+  '',
+);
+
 /** artwork lives on the store's own server, as a path the catalogue hands back */
 export const imageUrl = (imagePath: string) => `${API_URL}${imagePath}`;

@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HoneystickFab as Fab } from '@honeystick/expo';
 
 import { useCart } from '@/hooks/use-cart';
+import { HONEYSTICK_APP_URL } from '@/lib/config';
 import { theme } from '@/lib/theme';
 
 /**
@@ -18,10 +19,12 @@ import { theme } from '@/lib/theme';
  *     width, and it only exists when there is something in the cart - so the
  *     mark has to move up out of its way and back down again.
  *
- * Compact on purpose. A phone screen is already carrying a cart bar and a
- * product grid, and a pill reading "Billing by Honeystick" across the bottom of
- * it is a banner rather than a mark. The label is still there for screen
- * readers, which is where it does the work anyway.
+ * No longer compact. It used to hide its caption on the reasoning that a phone
+ * screen is already carrying a cart bar and a product grid, and a pill reading
+ * "Billing by Honeystick" across the bottom of it is a banner rather than a
+ * mark. That was true of *that* pill; the badge now reads "Billing by" and then
+ * the logo, which is short enough to sit in a corner without taking the screen
+ * over - and a mark nobody can read is not doing the job either.
  */
 export default function HoneystickFab() {
   const insets = useSafeAreaInsets();
@@ -31,6 +34,9 @@ export default function HoneystickFab() {
   const clearsCartBar = cartCount > 0 ? 48 + theme.spacing * 0.75 : 0;
 
   return (
-    <Fab compact offset={insets.bottom + theme.spacing * 0.75 + clearsCartBar} />
+    <Fab
+      href={HONEYSTICK_APP_URL}
+      offset={insets.bottom + theme.spacing * 0.75 + clearsCartBar}
+    />
   );
 }

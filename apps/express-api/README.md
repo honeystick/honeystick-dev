@@ -1,4 +1,4 @@
-# The Depot API
+# Honeystick Example App API
 
 The same store logic as `apps/next-store`, on Express, and the backend the Expo
 app talks to.
@@ -19,16 +19,16 @@ on web.
 
 ## Routes
 
-| Route | What it is |
-| --- | --- |
-| `ALL /billing/*` | The Honeystick handler. Everything under it is forwarded to Honeystick with the secret key attached. |
-| `GET /api/storefront` | `{ products, services }` — one catalogue read, split on plan type. |
-| `POST /api/checkout` | Prices the basket server-side and returns the provider's payment page. |
-| `POST /api/subscribe` | The same, for a subscription — one `POST /customer-plans/checkout` call, with the shopper named by email. Answers with `plan_id`, which is what the account screen is built on. |
-| `POST /api/demo/reset` | Puts the in-memory stock and seats back to their defaults. |
-| `GET /products/*.svg` | Product artwork, so the app can render the catalogue's image paths. |
-| `GET /return` | Where PayFast sends a native shopper. Hops to the app's URL scheme so the system browser closes itself. |
-| `GET /healthz` | Whether a key is set. |
+| Route                  | What it is                                                                                                                                                                      |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ALL /billing/*`       | The Honeystick handler. Everything under it is forwarded to Honeystick with the secret key attached.                                                                            |
+| `GET /api/storefront`  | `{ products, services }` — one catalogue read, split on plan type.                                                                                                              |
+| `POST /api/checkout`   | Prices the basket server-side and returns the provider's payment page.                                                                                                          |
+| `POST /api/subscribe`  | The same, for a subscription — one `POST /customer-plans/checkout` call, with the shopper named by email. Answers with `plan_id`, which is what the account screen is built on. |
+| `POST /api/demo/reset` | Puts the in-memory stock and seats back to their defaults.                                                                                                                      |
+| `GET /products/*.svg`  | Product artwork, so the app can render the catalogue's image paths.                                                                                                             |
+| `GET /return`          | Where PayFast sends a native shopper. Hops to the app's URL scheme so the system browser closes itself.                                                                         |
+| `GET /healthz`         | Whether a key is set.                                                                                                                                                           |
 
 `/billing` is the SDK's default prefix, so neither the mount here nor the
 provider in the app has to name it. The Next store mounts at `/api/billing` to
@@ -61,7 +61,7 @@ is the only thing that puts them back.
 Two different answers, because a basket and a subscription end in different
 places.
 
-**A basket** returns to `STORE_URL` — the *store's* address rather than this
+**A basket** returns to `STORE_URL` — the _store's_ address rather than this
 API's, pointed at the Next store so a real payment lands somewhere that renders.
 
 **A subscription** returns to this API's own `GET /return`, which navigates to

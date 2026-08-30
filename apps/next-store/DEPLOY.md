@@ -1,4 +1,4 @@
-# Deploying The Depot
+# Deploying Honeystick Example App
 
 The store runs as a Cloudflare Worker via [OpenNext](https://opennext.js.org/cloudflare).
 Pushing to `main` deploys it; everything below is the one-time setup.
@@ -18,18 +18,18 @@ the table. OpenNext compiles Next's server half into a Worker and serves
 
 This repository is public. The split is deliberate rather than incidental:
 
-| Lives in the repo | Lives outside it |
-| --- | --- |
-| `wrangler.jsonc` — worker name, route, compatibility flags | `HONEYSTICK_SECRET_KEY` — a Worker secret |
-| `open-next.config.ts` | `CLOUDFLARE_API_TOKEN` — a GitHub Actions secret |
-| `.env.example` — the template, with no values | `CLOUDFLARE_ACCOUNT_ID` — a GitHub Actions secret |
-| `NEXT_PUBLIC_STORE_URL` in `vars` | `.env.local` — gitignored repo-wide |
+| Lives in the repo                                          | Lives outside it                                  |
+| ---------------------------------------------------------- | ------------------------------------------------- |
+| `wrangler.jsonc` — worker name, route, compatibility flags | `HONEYSTICK_SECRET_KEY` — a Worker secret         |
+| `open-next.config.ts`                                      | `CLOUDFLARE_API_TOKEN` — a GitHub Actions secret  |
+| `.env.example` — the template, with no values              | `CLOUDFLARE_ACCOUNT_ID` — a GitHub Actions secret |
+| `NEXT_PUBLIC_STORE_URL` in `vars`                          | `.env.local` — gitignored repo-wide               |
 
 Two things are worth stating plainly, because both are easy to get wrong once
 and never notice:
 
 - **`vars` in `wrangler.jsonc` is not a secret store.** Anything there is
-  committed to a public repo *and* readable from the deployed Worker. Only
+  committed to a public repo _and_ readable from the deployed Worker. Only
   values you would happily print belong in it.
 - **`NEXT_PUBLIC_` means published.** Next inlines those into the client bundle
   at build time, so a secret with that prefix is served to every visitor. The
@@ -39,14 +39,14 @@ and never notice:
 
 ### 1. Cloudflare API token
 
-Create a token at *My Profile → API Tokens* using the **Edit Cloudflare Workers**
+Create a token at _My Profile → API Tokens_ using the **Edit Cloudflare Workers**
 template, scoped to the account and the `honeystick.co.za` zone. Nothing here
 needs a Global API Key, and using one would hand CI the ability to do anything
 your account can.
 
 ### 2. GitHub repository secrets
 
-*Settings → Secrets and variables → Actions*:
+_Settings → Secrets and variables → Actions_:
 
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
@@ -62,6 +62,20 @@ cd apps/next-store
 npx wrangler secret put HONEYSTICK_SECRET_KEY --env production   # demo
 npx wrangler secret put HONEYSTICK_SECRET_KEY --env dev          # dev-demo
 ```
+
+If you have registered a webhook endpoint for the store, its signing secret goes
+the same way — a secret rather than a `var`, because it is the one value that
+proves a delivery is genuine:
+
+```sh
+npx wrangler secret put HONEYSTICK_WEBHOOK_SECRET --env production
+npx wrangler secret put HONEYSTICK_WEBHOOK_SECRET --env dev
+```
+
+Per environment again, and per _endpoint_: register one endpoint per Worker
+pointing at that Worker's own `/api/honeystick/webhook`, or the two will be
+verifying each other's deliveries and failing every one. Leave it unset and the
+route answers 503, which is the correct answer for a store that has no endpoint.
 
 Both Workers are named environments, so **every** command needs `--env`. There
 is deliberately nothing deployable at the top level: with environments defined,
@@ -91,10 +105,10 @@ call that needs an organization. A visitor still walks the whole flow.
 
 Two Workers come out of this repo, from one build:
 
-| Hostname | Worker | Deployed by |
-| --- | --- | --- |
-| `demo.honeystick.co.za` | `honeystick-demo` | `cf:deploy` (`--env production`) |
-| `dev-demo.honeystick.co.za` | `honeystick-demo-dev` | `cf:deploy:dev` (`--env dev`) |
+| Hostname                    | Worker                | Deployed by                      |
+| --------------------------- | --------------------- | -------------------------------- |
+| `demo.honeystick.co.za`     | `honeystick-demo`     | `cf:deploy` (`--env production`) |
+| `dev-demo.honeystick.co.za` | `honeystick-demo-dev` | `cf:deploy:dev` (`--env dev`)    |
 
 Both are **Worker routes**, not custom domains, so each hostname needs a DNS
 record that already exists and is **proxied** (orange cloud). The convention is
@@ -115,7 +129,7 @@ Both Workers go out on every run, from a single build, dev first. They can share
 a build because the only difference between them is `NEXT_PUBLIC_STORE_URL`,
 which is read in `'use server'` files and therefore resolves from the Worker's
 `vars` at request time rather than being inlined by `next build`. A value used
-in a *client* component could not be shared this way and would need a build
+in a _client_ component could not be shared this way and would need a build
 each.
 
 Dev is deployed first so that a deploy which is going to fail has already failed
@@ -130,7 +144,7 @@ npm run cf:deploy     --workspace @honeystick/next-store   # upload to demo
 npm run cf:deploy:dev --workspace @honeystick/next-store   # upload to dev-demo
 ```
 
-**`cf:build` first, always.** `preview` and `deploy` both act on a *built* app
+**`cf:build` first, always.** `preview` and `deploy` both act on a _built_ app
 and neither builds one — running `cf:deploy` on its own fails with "Could not
 find compiled Open Next config", which reads like a configuration problem and is
 really a missing step. The three scripts are one-to-one wrappers around the
@@ -153,7 +167,7 @@ until the next push and then quietly disappear.
 It has nothing to do with secrets. `wrangler secret put` values are never
 removed by a deploy, only by `wrangler secret delete`.
 
-The trade: with it on, *removing* a var from the config no longer removes it
+The trade: with it on, _removing_ a var from the config no longer removes it
 from the Worker. Deleting one for real means doing it in the dashboard too.
 
 ### Do not deploy from your laptop
@@ -190,12 +204,12 @@ instead of being recycled every five minutes.
 
 ### Project settings
 
-| Setting | Value |
-| --- | --- |
-| Root Directory | `apps/next-store` |
-| Framework preset | Next.js (auto-detected) |
-| Install command | leave default — Vercel detects the npm workspace and installs from the repo root, which is what resolves `honeystick` and `@honeystick/*` to the local packages |
-| Build command | leave default (`next build`) — **not** `cf:build` |
+| Setting          | Value                                                                                                                                                           |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Root Directory   | `apps/next-store`                                                                                                                                               |
+| Framework preset | Next.js (auto-detected)                                                                                                                                         |
+| Install command  | leave default — Vercel detects the npm workspace and installs from the repo root, which is what resolves `honeystick` and `@honeystick/*` to the local packages |
+| Build command    | leave default (`next build`) — **not** `cf:build`                                                                                                               |
 
 Two environment variables, both under Production:
 

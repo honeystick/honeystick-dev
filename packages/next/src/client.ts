@@ -15,6 +15,7 @@
 export {
   HoneystickContext,
   HoneystickError,
+  HoneystickBadge,
   HoneystickFab,
   HoneystickProvider,
   useCustomer,
@@ -24,6 +25,7 @@ export {
   type CheckParams,
   type CheckResult,
   type HoneystickContextValue,
+  type HoneystickBadgeProps,
   type HoneystickFabProps,
   type HoneystickProviderProps,
   type HookParams,

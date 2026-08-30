@@ -1,5 +1,5 @@
 /**
- * The Depot's palette, as the web store's CSS custom properties define it.
+ * Honeystick Example App's palette, as the web store's CSS custom properties define it.
  *
  * Kept as one object rather than scattered through StyleSheets so the two stores
  * can be held side by side and seen to be the same shop. React Native has no

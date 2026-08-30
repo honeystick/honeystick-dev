@@ -1,32 +1,29 @@
-# Honeystick SDK
+# Welcome to the Honeystick SDK
 
-The JavaScript SDK for [Honeystick](https://honeystick.co.za) billing, and five
+The JavaScript SDK is for [Honeystick](https://honeystick.co.za) billing infrastructure. We have five
 sample stores that use it — the same shop, built five ways, so you can read the
 one closest to your stack.
 
 This repo has two jobs, and both run from GitHub Actions:
 
-| | What | When |
-| --- | --- | --- |
-| **Publish the SDKs to npm** | the seven `packages/*` | pushing a `v*` tag |
-| **Deploy the demo** | `apps/next-store` → two Cloudflare Workers, [demo.honeystick.co.za](https://demo.honeystick.co.za) and `dev-demo.honeystick.co.za` | pushing to `main` |
+|                             | What                                                                                                                               | When               |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| **Publish the SDKs to npm** | the seven `packages/*`                                                                                                             | pushing a `v*` tag |
+| **Deploy the demo**         | `apps/next-store` → two Cloudflare Workers, [demo.honeystick.co.za](https://demo.honeystick.co.za) and `dev-demo.honeystick.co.za` | pushing to `main`  |
 
 Nothing else deploys or publishes. The other four apps are read-and-copy
 samples that run locally.
 
 ## Packages
 
-| Package | What it is |
-| --- | --- |
-| `honeystick` | The core client. `createHoneystick()` holds a secret key and calls the API; `createHoneystickClient()` holds nothing and calls a handler on your own server. `honeystick/backend` is the handler both adapters wrap. |
-| `@honeystick/react` | Provider and hooks for the web — `useCustomer`, `useListPlans`, `useListFeatures`, and `HoneystickFab`. |
-| `@honeystick/react-native` | The same hooks for native. One difference: `backendUrl` is required. |
-| `@honeystick/expo` | A re-export of `@honeystick/react-native`. There is nothing Expo-specific in it; the name exists because that is what an Expo app looks for. |
-| `@honeystick/next` | Mounts the handler on a catch-all route, plus a server client. `@honeystick/next/client` is the client half, kept behind its own `'use client'`. |
-| `@honeystick/hono`, `@honeystick/express` | The same handler for those frameworks. A few lines each — nothing about holding a key and calling an API is framework-specific. |
-
-Every one is a standalone npm package. Nothing here depends on the samples, on
-this repo's layout, or on a bundler.
+| Package                                   | What it is                                                                                                                                                                                                           |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `honeystick`                              | The core client. `createHoneystick()` holds a secret key and calls the API; `createHoneystickClient()` holds nothing and calls a handler on your own server. `honeystick/backend` is the handler both adapters wrap. |
+| `@honeystick/react`                       | Provider and hooks for the web — `useCustomer`, `useListPlans`, `useListFeatures`, and `HoneystickFab`.                                                                                                              |
+| `@honeystick/react-native`                | The same hooks for native. One difference: `backendUrl` is required.                                                                                                                                                 |
+| `@honeystick/expo`                        | A re-export of `@honeystick/react-native`. There is nothing Expo-specific in it; the name exists because that is what an Expo app looks for.                                                                         |
+| `@honeystick/next`                        | Mounts the handler on a catch-all route, plus a server client. `@honeystick/next/client` is the client half, kept behind its own `'use client'`.                                                                     |
+| `@honeystick/hono`, `@honeystick/express` | The same handler for those frameworks. A few lines each — nothing about holding a key and calling an API is framework-specific.                                                                                      |
 
 ### Installing
 
@@ -52,7 +49,7 @@ Subpath exports are real exports, not deep file paths:
 
 ```ts
 import { createHoneystick } from 'honeystick';
-import { createCoreHandler } from 'honeystick/backend';   // server only
+import { createCoreHandler } from 'honeystick/backend'; // server only
 import { useCustomer } from '@honeystick/react/hooks';
 import { HoneystickProvider } from '@honeystick/next/client';
 ```
@@ -74,15 +71,15 @@ Releasing is a tag away — see [Shipping](#shipping).
 
 ## Sample stores
 
-All four are "The Depot", selling the same goods and the same subscriptions.
+All four are "Honeystick Example App", selling the same goods and the same subscriptions.
 
-| App | Stack | Backend | Deployed |
-| --- | --- | --- | --- |
-| `apps/next-store` | Next.js, App Router | itself — handler at `/api/billing` | yes, Cloudflare |
-| `apps/express-api` | Express | itself — handler at `/billing` | no |
-| `apps/react-store` | React SPA on Vite, no framework server | `express-api` | no |
-| `apps/expo-store` | Expo + expo-router | `express-api` | no |
-| `apps/rn-store` | Bare React Native, no Expo at all | `express-api` | no |
+| App                | Stack                                  | Backend                            | Deployed        |
+| ------------------ | -------------------------------------- | ---------------------------------- | --------------- |
+| `apps/next-store`  | Next.js, App Router                    | itself — handler at `/api/billing` | yes, Cloudflare |
+| `apps/express-api` | Express                                | itself — handler at `/billing`     | no              |
+| `apps/react-store` | React SPA on Vite, no framework server | `express-api`                      | no              |
+| `apps/expo-store`  | Expo + expo-router                     | `express-api`                      | no              |
+| `apps/rn-store`    | Bare React Native, no Expo at all      | `express-api`                      | no              |
 
 Three of them share one backend on purpose. `express-api` is the server, and the
 React SPA, the Expo app and the bare React Native app are three different
@@ -124,7 +121,7 @@ the one call that needs an organization. Copy `.env.example` to `.env` (or
 
 That is why there are two clients rather than one. `createHoneystick()` holds
 the key and only ever runs on a server. `createHoneystickClient()` holds nothing
-and calls a route on *your* server, where the handler attaches the key on the
+and calls a route on _your_ server, where the handler attaches the key on the
 way through. On native this is not a nicety: an app bundle is readable by anyone
 who has the app, so a key compiled into one is a published key.
 
@@ -137,18 +134,20 @@ One call. The shopper is named by email, not by an id you had to fetch first:
 
 ```ts
 const checkout = await hs.customerPlans.checkout({
-  customers: [{ email, name }],           // matched, or registered from the email
+  customers: [{ email, name }], // matched, or registered from the email
   provider: 'payfast',
   plan_type: 'subscription',
   plan_type_data: { price, price_plan: 'fixed', plan_frequency: 'month' },
-  feature_ids, rules,                     // usage-limit rules — the account page's meters
-  return_url, cancel_url,
+  feature_ids,
+  rules, // usage-limit rules — the account page's meters
+  return_url,
+  cancel_url,
 });
 // → { org_customer_ids, org_customer_plan_ids, redirect_url }
 ```
 
 `id`, `ext_id` or `email`, tried in that order of confidence. An email matching
-nobody registers a customer; an email matching someone *is* that person.
+nobody registers a customer; an email matching someone _is_ that person.
 
 This matters more than it looks. The obvious alternative — `POST /customers`
 then create the plan — writes a customer unconditionally, so a shopper who
@@ -167,7 +166,7 @@ Two things worth knowing if you copy it:
   Without it the hook takes the newest subscription on the whole organization,
   which on any shared org hands whoever opens the page the last person's
   subscription with a cancel button under it.
-- **`removed` is not a detail.** Cancelling a plan that never started *deletes*
+- **`removed` is not a detail.** Cancelling a plan that never started _deletes_
   it rather than cancelling it, so the id stops resolving and a screen that
   re-reads to confirm lands on a 404 looking like a failure. `cancel()` reports
   it.
@@ -253,8 +252,8 @@ posted to a store's callback. The status mapping (`COMPLETE → active`) and the
 callback body shape were checked by reading both sides, not by running them.
 
 **Known gap: the handler authenticates, it does not authorize.** `identify()`
-establishes *who is calling*, and nothing downstream checks that answer against
-*what they asked for*. So a browser can read or cancel any plan whose id it can
+establishes _who is calling_, and nothing downstream checks that answer against
+_what they asked for_. So a browser can read or cancel any plan whose id it can
 guess.
 
 The worst of it is closed: `/customers`, `/customers/:id` and the
@@ -297,8 +296,8 @@ workflow and commit built each tarball — verifiable with `npm audit signatures
 
 Two one-time setup steps:
 
-1. On npmjs.com, for **each** of the seven packages: *Settings → Trusted
-   Publisher → GitHub Actions*, naming this repository and
+1. On npmjs.com, for **each** of the seven packages: _Settings → Trusted
+   Publisher → GitHub Actions_, naming this repository and
    `publish-packages.yml`. Until that exists the publish fails with a 404.
 2. A GitHub Environment called `npm`, ideally with a required reviewer.
    Publishing is the one action in this repo that cannot be undone.

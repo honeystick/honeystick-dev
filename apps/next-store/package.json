@@ -2,7 +2,7 @@
   "name": "@honeystick/next-store",
   "version": "0.0.0",
   "private": true,
-  "description": "The Depot - a sample ecommerce store built on Honeystick and Next.js",
+  "description": "Honeystick Example App - a sample ecommerce store built on Honeystick and Next.js",
   "scripts": {
     "build": "next build",
     "cf:build": "opennextjs-cloudflare build",

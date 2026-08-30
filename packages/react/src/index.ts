@@ -1,6 +1,8 @@
 export { HoneystickProvider } from './HoneystickProvider.js';
 export type { HoneystickProviderProps } from './HoneystickProvider.js';
 export { HoneystickContext, useHoneystickClient } from './HoneystickContext.js';
+export { HoneystickBadge, honeystickAppUrl } from './HoneystickBadge.js';
+export type { HoneystickBadgeProps } from './HoneystickBadge.js';
 export { HoneystickFab } from './HoneystickFab.js';
 export type { HoneystickFabProps } from './HoneystickFab.js';
 export type { HoneystickContextValue } from './HoneystickContext.js';

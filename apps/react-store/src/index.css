@@ -1,5 +1,5 @@
 /*
- * The Depot's palette, as the Next store's CSS custom properties define it.
+ * Honeystick Example App's palette, as the Next store's CSS custom properties define it.
  * One place to change them, so the four stores can be held side by side and
  * seen to be the same shop.
  */
@@ -14,15 +14,32 @@
   --danger: #b3261e;
   --success: #2fd07a;
   --spacing: 16px;
-  --rainbow-gradient: linear-gradient(90deg, #ff3b6b, #ff8a3d, #ffc93c, #2fd07a, #2f9bff, #6b5ce7, #b45cff);
+  --rainbow-gradient: linear-gradient(
+    90deg,
+    #ff3b6b,
+    #ff8a3d,
+    #ffc93c,
+    #2fd07a,
+    #2f9bff,
+    #6b5ce7,
+    #b45cff
+  );
 
-  font-family: Lexend, system-ui, -apple-system, sans-serif;
+  font-family:
+    Lexend,
+    system-ui,
+    -apple-system,
+    sans-serif;
   color: var(--color-primary);
   background: var(--bg-primary);
 }
 
-* { box-sizing: border-box; }
-body { margin: 0; }
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
 
 .container {
   max-width: 960px;
@@ -42,37 +59,158 @@ body { margin: 0; }
   border-image: var(--rainbow-gradient) 1;
   padding-bottom: 12px;
 }
-.nav a { color: var(--color-secondary); text-decoration: none; font-weight: 500; }
-.nav h1 { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.08em; margin: 0; }
+.nav a {
+  color: var(--color-secondary);
+  text-decoration: none;
+  font-weight: 500;
+}
+.nav h1 {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
 
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--spacing); }
-.card { background: var(--bg-secondary); padding: 12px; display: flex; flex-direction: column; gap: 4px; }
-.card img { width: 100%; height: 96px; object-fit: contain; background: var(--bg-primary); }
-.eyebrow { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-secondary); }
-.title { font-size: 0.9rem; font-weight: 600; }
-.price { font-weight: 700; }
-.muted { font-size: 0.8rem; color: var(--color-secondary); line-height: 1.5; }
-.error { color: var(--danger); font-size: 0.85rem; }
-.note { color: var(--color-alt); font-size: 0.85rem; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--spacing);
+}
+.card {
+  background: var(--bg-secondary);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.card img {
+  width: 100%;
+  height: 96px;
+  object-fit: contain;
+  background: var(--bg-primary);
+}
+.eyebrow {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-secondary);
+}
+.title {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.price {
+  font-weight: 700;
+}
+.muted {
+  font-size: 0.8rem;
+  color: var(--color-secondary);
+  line-height: 1.5;
+}
+.error {
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+.note {
+  color: var(--color-alt);
+  font-size: 0.85rem;
+}
 
-button { font-family: inherit; cursor: pointer; font-size: 0.8rem; font-weight: 500; padding: 8px 14px; border: 1px solid var(--color-alt); background: transparent; color: var(--color-secondary); }
-button.primary { background: var(--bg-muted); border-color: var(--bg-muted); color: var(--color-light); }
-button.danger { border-color: var(--danger); color: var(--danger); }
-button:disabled { opacity: 0.5; cursor: not-allowed; }
+button {
+  font-family: inherit;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 8px 14px;
+  border: 1px solid var(--color-alt);
+  background: transparent;
+  color: var(--color-secondary);
+}
+button.primary {
+  background: var(--bg-muted);
+  border-color: var(--bg-muted);
+  color: var(--color-light);
+}
+button.danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-input { font-family: inherit; padding: 10px; border: 1px solid var(--color-alt); width: 100%; }
-label { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: var(--color-secondary); }
+input {
+  font-family: inherit;
+  padding: 10px;
+  border: 1px solid var(--color-alt);
+  width: 100%;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--color-secondary);
+}
 
-.panel { border: 1px solid var(--bg-secondary); padding: var(--spacing); display: flex; flex-direction: column; gap: var(--spacing); }
-.row { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing); }
-.bar { height: 8px; background: var(--bg-secondary); overflow: hidden; }
-.bar > div { height: 100%; background-image: var(--rainbow-gradient); transition: width 240ms ease; }
-.bar > div[data-full='true'] { background-image: none; background-color: var(--danger); }
+.panel {
+  border: 1px solid var(--bg-secondary);
+  padding: var(--spacing);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing);
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing);
+}
+.bar {
+  height: 8px;
+  background: var(--bg-secondary);
+  overflow: hidden;
+}
+.bar > div {
+  height: 100%;
+  background-image: var(--rainbow-gradient);
+  transition: width 240ms ease;
+}
+.bar > div[data-full='true'] {
+  background-image: none;
+  background-color: var(--danger);
+}
 
-.settled { display: flex; gap: 12px; padding: var(--spacing); background: #e8f9ef; border-left: 4px solid var(--success); }
-.pill { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 10px; border-radius: 999px; background: var(--bg-secondary); color: var(--color-secondary); }
-.pill[data-state='live'] { color: var(--success); }
-.pill[data-state='offline'] { color: var(--danger); }
+.settled {
+  display: flex;
+  gap: 12px;
+  padding: var(--spacing);
+  background: #e8f9ef;
+  border-left: 4px solid var(--success);
+}
+.pill {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--bg-secondary);
+  color: var(--color-secondary);
+}
+.pill[data-state='live'] {
+  color: var(--success);
+}
+.pill[data-state='offline'] {
+  color: var(--danger);
+}
 
-dialog { border: none; padding: 0; max-width: 460px; width: 92vw; }
-dialog::backdrop { background: rgba(43, 36, 64, 0.5); }
+dialog {
+  border: none;
+  padding: 0;
+  max-width: 460px;
+  width: 92vw;
+}
+dialog::backdrop {
+  background: rgba(43, 36, 64, 0.5);
+}

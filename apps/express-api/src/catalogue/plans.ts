@@ -1,5 +1,5 @@
 /**
- * The Depot's catalogue, in the shape Honeystick answers `GET /plans` with.
+ * Honeystick Example App's catalogue, in the shape Honeystick answers `GET /plans` with.
  *
  * These are plans rather than a store-specific product type on purpose: the
  * mapping in catalogue.ts is written against the real contract, so pointing

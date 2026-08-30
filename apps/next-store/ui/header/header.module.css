@@ -15,10 +15,26 @@
   margin-top: 0;
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+  min-width: 0;
+}
+
 .logo {
   display: flex;
   align-items: center;
   flex: none;
+}
+
+/* The badge is the first thing worth dropping when the bar runs out of room:
+   the store's own wordmark and the cart both have to survive a narrow phone,
+   and the FAB is still on screen carrying the same link. */
+@media (max-width: 480px) {
+  .brand :global(a[aria-label='Billing by Honeystick']) {
+    display: none;
+  }
 }
 
 .cartRow {

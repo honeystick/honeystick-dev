@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "The Depot's backend - the same store logic as the Next app, on Express, and the server the Expo app talks to",
+  "description": "Honeystick Example App's backend - the same store logic as the Next app, on Express, and the server the Expo app talks to",
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "start": "tsx --env-file-if-exists=.env src/index.ts",

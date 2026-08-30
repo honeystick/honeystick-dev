@@ -11,7 +11,7 @@ import { API_URL } from '@/lib/config';
 import { theme } from '@/lib/theme';
 
 /**
- * The Depot, on native.
+ * Honeystick Example App, on native.
  *
  * `HoneystickProvider` here is the same provider the web store uses, re-exported
  * by `@honeystick/expo` with one difference: `backendUrl` is required. A page can
@@ -36,7 +36,7 @@ import { theme } from '@/lib/theme';
  * `EXPO_PUBLIC_API_URL` is allowed to hold an address and nothing else.
  *
  * `includeCredentials` because the handler's `identify` is expected to read a
- * session. The Depot has no accounts yet and treats every visitor as the same
+ * session. Honeystick Example App has no accounts yet and treats every visitor as the same
  * guest, but the cookie has to be sent for the day it does - and cross-origin,
  * which a native app always is, fetch drops credentials unless asked.
  */

@@ -1,7 +1,7 @@
 import { defineCloudflareConfig } from '@opennextjs/cloudflare';
 
 /**
- * The Depot, as a Cloudflare Worker.
+ * Honeystick Example App, as a Cloudflare Worker.
  *
  * A static export was never an option here and it is worth saying why, because
  * it is the first thing anyone reaches for: the shop floor is a server

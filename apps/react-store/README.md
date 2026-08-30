@@ -1,4 +1,4 @@
-# The Depot, as a React SPA
+# Honeystick Example App, as a React SPA
 
 The same store as the other four, built on `@honeystick/react` with **no
 framework server of its own** — Vite, React Router, and nothing rendering on a
@@ -31,7 +31,7 @@ A SPA has no such luck, and that is what this sample is for:
 
 - **`backendUrl` is required in practice.** The page is served from `:5173` and
   the handler is mounted on `:4000`. There is no relative `/billing` to resolve.
-  This is the same asymmetry that makes it a *type-level* requirement in
+  This is the same asymmetry that makes it a _type-level_ requirement in
   `@honeystick/react-native` — an app was not served from anywhere either.
 - **`includeCredentials` is required.** `fetch` drops cookies cross-origin
   unless asked, and the handler's `identify` is expected to read a session. The
@@ -47,12 +47,12 @@ which is the worst possible place for it to appear.
 
 ## What is worth reading
 
-| File | Why |
-| --- | --- |
-| `src/main.tsx` | the provider, and the two props a SPA cannot omit |
-| `src/components/service-sheet.tsx` | subscribing: one call, identified by email |
-| `src/pages/account.tsx` | usage, card update, cancel — all SDK, no store endpoint |
-| `src/hooks/use-store-events.tsx` | `EventSource` against the API, and why it needs no library |
+| File                               | Why                                                        |
+| ---------------------------------- | ---------------------------------------------------------- |
+| `src/main.tsx`                     | the provider, and the two props a SPA cannot omit          |
+| `src/components/service-sheet.tsx` | subscribing: one call, identified by email                 |
+| `src/pages/account.tsx`            | usage, card update, cancel — all SDK, no store endpoint    |
+| `src/hooks/use-store-events.tsx`   | `EventSource` against the API, and why it needs no library |
 
 ## The subscription flow
 

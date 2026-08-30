@@ -19,7 +19,7 @@ import { theme } from './theme';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 /**
- * The Depot, on bare React Native.
+ * Honeystick Example App, on bare React Native.
  *
  * `HoneystickProvider` is `@honeystick/react-native`'s, and it is the same
  * provider the web store uses with one difference: `backendUrl` is required. A
@@ -42,7 +42,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
  * the app, so a secret key compiled into one is a published secret.
  *
  * `includeCredentials` because the handler's `identify` is expected to read a
- * session. The Depot has no accounts yet and treats every visitor as the same
+ * session. Honeystick Example App has no accounts yet and treats every visitor as the same
  * guest, but the cookie has to be sent for the day it does - and cross-origin,
  * which a native app always is, fetch drops credentials unless asked.
  */
@@ -75,7 +75,7 @@ export default function App() {
                   <Stack.Screen
                     name="Shop"
                     component={ShopScreen}
-                    options={{ title: 'The Depot' }}
+                    options={{ title: 'Honeystick Example App' }}
                   />
                   <Stack.Screen
                     name="Cart"

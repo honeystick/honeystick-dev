@@ -10,10 +10,14 @@ import {
 export {
   API_URLS,
   DEFAULT_PATH_PREFIX,
+  DEPLOYMENTS,
+  DEV_API_URLS,
   ENVIRONMENTS,
   HoneystickConfigError,
+  apiOrigin,
   parseKey,
   type ClientOptions,
+  type Deployment,
   type Environment,
   type KeyKind,
 } from './config.js';
@@ -26,6 +30,15 @@ export type {
   Resources,
 } from './resources.js';
 export type { ProxyOptions, Transport } from './transport.js';
+/**
+ * Re-exported as types only. The verifier itself lives at `honeystick/webhooks`
+ * and is deliberately not pulled in here: it is server-only code, and a browser
+ * bundle that imports this file has no business carrying an HMAC routine.
+ */
+export type {
+  HoneystickWebhookEvent,
+  HoneystickWebhookEventName,
+} from './webhooks.js';
 
 export type Honeystick = Resources & {
   readonly environment: Transport['environment'];

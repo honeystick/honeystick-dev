@@ -5,7 +5,7 @@ import cors from 'cors';
 import express from 'express';
 import { z } from 'zod';
 
-import { honeystickHandler } from '@honeystick/express';
+import { honeystickHandler, honeystickWebhook } from '@honeystick/express';
 
 import { getStorefront } from './catalogue/catalogue';
 import { DUMMY_PLANS } from './catalogue/plans';
@@ -63,6 +63,56 @@ app.set('trust proxy', true);
  */
 app.use(cors({ origin: true, credentials: true }));
 
+/**
+ * Honeystick's webhooks, mounted **above** express.json() on purpose.
+ *
+ * This is the one route in the app that must see the raw bytes. A signature
+ * covers exactly what was sent, and `express.json()` consumes the stream and
+ * leaves a parsed object behind - after which the bytes cannot be recovered,
+ * because re-serialising an object does not reliably reproduce whitespace,
+ * unicode escaping, or a number that arrived as `1.0`.
+ *
+ * Ordering is the fix rather than cleverness: `app.use(express.json())` on the
+ * next line would otherwise have already eaten the body by the time this route
+ * ran, and the failure would present as a signature mismatch on a delivery that
+ * was completely genuine - which is a bad afternoon spent checking a secret
+ * that was right all along.
+ *
+ * Everything else in this file still gets JSON parsing as normal.
+ */
+if (process.env.HONEYSTICK_WEBHOOK_SECRET) {
+  app.post(
+    '/honeystick/webhook',
+    express.raw({ type: 'application/json' }),
+    honeystickWebhook({
+      secret: process.env.HONEYSTICK_WEBHOOK_SECRET,
+      on: (event) => {
+        /**
+         * Onto the bus untouched, and for the same reason as the Next store:
+         * proving the delivery is genuine is this route's whole job, and
+         * deciding which of the sixteen events matter is the client's.
+         */
+        publish({
+          type: 'honeystick',
+          event: event.event,
+          deliveryId: event.id,
+          at: event.created_at,
+          environment: event.environment,
+          data: event.data,
+        });
+
+        console.log({
+          HONEYSTICK_WEBHOOK: {
+            event: event.event,
+            delivery: event.id,
+            org: event.org_id,
+          },
+        });
+      },
+    }),
+  );
+}
+
 app.use(express.json());
 
 /**
@@ -100,7 +150,7 @@ if (isConfigured()) {
       // No orgId: the secret key already carries the claim of which
       // organization it belongs to.
       secretKey: process.env.HONEYSTICK_SECRET_KEY,
-      // Whoever this server considers signed in. The Depot has no accounts, so
+      // Whoever this server considers signed in. Honeystick Example App has no accounts, so
       // every caller is the same guest - replace this with a real session
       // lookup and nothing else about the integration changes.
       identify: () => ({ customerId: 'guest' }),
@@ -433,7 +483,7 @@ app.get('/healthz', (req, res) => {
 const HOST = process.env.HOST ?? '0.0.0.0';
 
 app.listen(PORT, HOST, () => {
-  console.log(`The Depot API on http://localhost:${PORT}`);
+  console.log(`Honeystick Example App API on http://localhost:${PORT}`);
   console.log(
     isConfigured()
       ? '  Honeystick: live (HONEYSTICK_SECRET_KEY is set)'

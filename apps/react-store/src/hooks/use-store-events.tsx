@@ -62,6 +62,17 @@ export function useStoreEvents(): {
       'order.placed',
       'subscription.started',
       'demo.reset',
+      /**
+       * Every registered webhook Honeystick delivers, on one frame name.
+       *
+       * The server sends all sixteen events under `honeystick` rather than
+       * under their own names, and that is what keeps this list from needing a
+       * new entry each time Honeystick adds an event - which matters here more
+       * than anywhere else in this repo, because a missing entry is not an
+       * error. `EventSource` dispatches by name, so an unregistered frame is
+       * received, matched against nothing, and dropped in silence.
+       */
+      'honeystick',
     ]) {
       source.addEventListener(name, (event) => {
         setStatus('live');

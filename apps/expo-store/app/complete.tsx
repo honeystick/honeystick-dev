@@ -1,5 +1,6 @@
 import { Link, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ResetDemo from '@/components/reset-demo';
 import { theme } from '@/lib/theme';
@@ -19,6 +20,7 @@ import { theme } from '@/lib/theme';
  * both.
  */
 export default function CompleteScreen() {
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
     order?: string;
     total?: string;
@@ -32,7 +34,11 @@ export default function CompleteScreen() {
   const plan = params.plan;
 
   return (
-    <View style={styles.screen}>
+    /* The last thing on this screen is the link back to the store, and this is
+       where a shopper lands from a system browser - so it is reached with the
+       gesture bar already on screen and nothing else to hold the link clear of
+       it. */
+    <View style={[styles.screen, { paddingBottom: insets.bottom + theme.spacing }]}>
       <Text style={styles.heading}>
         {plan ? 'Thanks for subscribing' : 'Thanks for your order'}
       </Text>

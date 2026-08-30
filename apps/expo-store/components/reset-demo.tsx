@@ -8,7 +8,7 @@ import { theme } from '@/lib/theme';
 /**
  * Putting the demo back, on every screen.
  *
- * The Depot's shelves and its subscription seats are small fixtures held in
+ * Honeystick Example App's shelves and its subscription seats are small fixtures held in
  * memory on the server, so a visitor can empty them - which is the point, and
  * also why there has to be a way back. It belongs on every screen rather than
  * tucked into one: whichever screen you exhausted is the screen you want to

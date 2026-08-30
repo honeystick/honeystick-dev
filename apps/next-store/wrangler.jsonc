@@ -104,7 +104,29 @@
         }
       ],
       "vars": {
-        "NEXT_PUBLIC_STORE_URL": "https://demo.honeystick.co.za"
+        "NEXT_PUBLIC_STORE_URL": "https://demo.honeystick.co.za",
+
+        // Where the Honeystick badge points: the Honeystick **app**, whose
+        // production Worker serves honeystick.co.za/* (see the app's own
+        // wrangler.jsonc). Not this store's own address - a badge on the demo
+        // linking to the demo is a link to the page you are already on - and
+        // not HONEYSTICK_URL, which is the API.
+        //
+        // Read on the server in layout.tsx and passed to the client component
+        // as a prop, *not* NEXT_PUBLIC_: one bundle serves both Workers, and a
+        // NEXT_PUBLIC_ value is inlined by `next build` so it would be the same
+        // on both.
+        "HS_APP_URL": "https://honeystick.co.za"
+
+        // No HONEYSTICK_URL and no HONEYSTICK_DEPLOYMENT.
+        //
+        // That is the point of the two axes rather than an oversight. The
+        // secret key says `sandbox`, the deployment defaults to `production`,
+        // and the SDK resolves those to sandbox.honeystick.co.za on its own -
+        // which is exactly where a public demo should be pointing.
+        //
+        // Set HONEYSTICK_URL only to reach an API that is not one of the four
+        // hosted ones, such as a local server on :8787.
       }
     },
 
@@ -117,7 +139,15 @@
         }
       ],
       "vars": {
-        "NEXT_PUBLIC_STORE_URL": "https://dev-demo.honeystick.co.za"
+        "NEXT_PUBLIC_STORE_URL": "https://dev-demo.honeystick.co.za",
+        // the app's preview Worker - dev.honeystick.co.za/*
+        "HS_APP_URL": "https://dev.honeystick.co.za",
+
+        // The one variable that separates this Worker from the production one,
+        // API-wise. With the same sandbox key, `dev` resolves to
+        // dev-sandbox.honeystick.co.za instead of sandbox.honeystick.co.za -
+        // so an internal test checkout never touches the estate customers use.
+        "HONEYSTICK_DEPLOYMENT": "dev"
       }
     }
   }

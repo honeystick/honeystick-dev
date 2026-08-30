@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "main": "expo-router/entry",
-  "description": "The Depot on native - the same store, built on @honeystick/expo against the Express API",
+  "description": "Honeystick Example App on native - the same store, built on @honeystick/expo against the Express API",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",

@@ -11,7 +11,7 @@ import styles from './reset-demo.module.css';
 /**
  * Putting the demo back.
  *
- * The Depot's shelves and its subscription seats are small fixtures held in
+ * Honeystick Example App's shelves and its subscription seats are small fixtures held in
  * memory, so a visitor can empty them - which is the point, and also why there
  * has to be a way back. It belongs on every page rather than tucked into one:
  * whichever page you exhausted is the page you want to refill from.

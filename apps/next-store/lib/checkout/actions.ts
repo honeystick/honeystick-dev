@@ -105,7 +105,7 @@ export async function startCheckout(
       // order reference, so a payment can always be traced back to a basket
       ext_id: orderId,
       name: `Depot order ${orderId}`,
-      description: `${order.item_count} item${order.item_count === 1 ? '' : 's'} from The Depot`,
+      description: `${order.item_count} item${order.item_count === 1 ? '' : 's'} from Honeystick Example App`,
       plan_model: 'paid',
       plan_type: 'one-time-payment',
       plan_type_data: { price: order.total },

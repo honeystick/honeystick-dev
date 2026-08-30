@@ -24,7 +24,7 @@ const live = configured
       // restate what the token says and at worst contradict it.
       secretKey: process.env.HONEYSTICK_SECRET_KEY,
       pathPrefix: '/api/billing',
-      // Whoever the store considers signed in. The Depot has no accounts yet,
+      // Whoever the store considers signed in. Honeystick Example App has no accounts yet,
       // so every visitor is the same guest customer - replace this with a real
       // session lookup and the rest of the integration is unchanged.
       identify: () => ({ customerId: 'guest' }),
