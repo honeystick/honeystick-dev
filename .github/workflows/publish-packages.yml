@@ -105,26 +105,17 @@ jobs:
       # than an error.
       - name: Publish
         env:
-          # Token auth, for the bootstrap release only.
+          # No NODE_AUTH_TOKEN. Authentication is the OIDC token this workflow
+          # mints, matched against the trusted publisher configured on each
+          # package at npmjs.com.
           #
-          # Trusted publishing is the destination, but it cannot be the way in:
-          # a trusted publisher is configured on a package that already exists,
-          # and at v0.80.0 none of these seven do. So the run that creates them
-          # authenticates with a granular token, and every run after it should
-          # not need one.
-          #
-          # Once v0.80.0 is on the registry, configure a trusted publisher for
-          # each of the seven packages at npmjs.com - naming this repository and
-          # this workflow file - then delete this line and the NPM_TOKEN secret.
-          # Leaving a publish token alive is the thing trusted publishing exists
-          # to stop.
-          #
-          # `--provenance` is unaffected and stays on: the attestation comes
-          # from `id-token: write` on a GitHub-hosted runner, not from how npm
-          # authenticated. It does require each package's `repository.url` to
-          # match the repository building it, which is why those point at
-          # honeystick-dev.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # A token is not an option here even as a shortcut. The honeystick org
+          # requires 2FA, and npm has been closing this door: since 2026-07-31 a
+          # 2FA-bypass granular token can no longer change package access or
+          # trusted-publishing config, and from January 2027 it loses direct
+          # publish entirely. Which is why the seven packages are bootstrapped
+          # by an interactive publish once, and every release after that comes
+          # from here with no stored credential at all.
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run || 'false' }}
         run: |
           set -euo pipefail
