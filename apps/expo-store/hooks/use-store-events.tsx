@@ -187,7 +187,14 @@ export function StoreEventsProvider({ children }: { children: ReactNode }) {
        * either way - the frame is a nudge, and the SDK does the read.
        */
       setStatus('live');
-      void queryClient.invalidateQueries({ queryKey: ['honeystick'] });
+      void queryClient.invalidateQueries({
+        queryKey: ['honeystick'],
+        // 'all', not the default 'active': a page behind a sheet or a
+        // backgrounded tab is exactly the reader a pushed frame exists
+        // for, and the default marks it stale and leaves it showing the
+        // old figure until it remounts.
+        refetchType: 'all',
+      });
 
       let data: unknown = event.data;
       try {
@@ -235,7 +242,14 @@ export function StoreEventsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const onChange = (next: AppStateStatus) => {
       if (next !== 'active') return;
-      void queryClient.invalidateQueries({ queryKey: ['honeystick'] });
+      void queryClient.invalidateQueries({
+        queryKey: ['honeystick'],
+        // 'all', not the default 'active': a page behind a sheet or a
+        // backgrounded tab is exactly the reader a pushed frame exists
+        // for, and the default marks it stale and leaves it showing the
+        // old figure until it remounts.
+        refetchType: 'all',
+      });
       failures.current = 0;
       reconnect();
     };

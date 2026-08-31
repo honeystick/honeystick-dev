@@ -1,6 +1,6 @@
 {
   "name": "honeystick",
-  "version": "0.1.0",
+  "version": "0.80.0",
   "description": "Honeystick billing client for JavaScript and TypeScript",
   "license": "MIT",
   "keywords": [
@@ -16,11 +16,11 @@
   "homepage": "https://honeystick.co.za",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/honeystick/honeystick-js.git",
+    "url": "git+https://github.com/honeystick/honeystick-dev.git",
     "directory": "packages/js"
   },
   "bugs": {
-    "url": "https://github.com/honeystick/honeystick-js/issues"
+    "url": "https://github.com/honeystick/honeystick-dev/issues"
   },
   "type": "module",
   "main": "./dist/index.js",

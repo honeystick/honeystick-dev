@@ -1,6 +1,6 @@
 {
   "name": "@honeystick/expo",
-  "version": "0.1.0",
+  "version": "0.80.0",
   "description": "Honeystick provider and hooks for Expo and React Native",
   "license": "MIT",
   "keywords": [
@@ -15,11 +15,11 @@
   "homepage": "https://honeystick.co.za",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/honeystick/honeystick-js.git",
+    "url": "git+https://github.com/honeystick/honeystick-dev.git",
     "directory": "packages/expo"
   },
   "bugs": {
-    "url": "https://github.com/honeystick/honeystick-js/issues"
+    "url": "https://github.com/honeystick/honeystick-dev/issues"
   },
   "type": "module",
   "main": "./dist/index.js",
@@ -40,8 +40,8 @@
     "prepublishOnly": "tsc --build"
   },
   "dependencies": {
-    "@honeystick/react-native": "^0.1.0",
-    "honeystick": "^0.1.0"
+    "@honeystick/react-native": "^0.80.0",
+    "honeystick": "^0.80.0"
   },
   "peerDependencies": {
     "react": ">=18",

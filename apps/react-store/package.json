@@ -11,9 +11,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@honeystick/react": "^0.1.0",
+    "@honeystick/react": "*",
     "@tanstack/react-query": "^5.85.6",
-    "honeystick": "^0.1.0",
+    "honeystick": "*",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.9.4",

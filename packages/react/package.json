@@ -1,6 +1,6 @@
 {
   "name": "@honeystick/react",
-  "version": "0.1.0",
+  "version": "0.80.0",
   "description": "Honeystick provider and hooks for React",
   "license": "MIT",
   "keywords": [
@@ -16,11 +16,11 @@
   "homepage": "https://honeystick.co.za",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/honeystick/honeystick-js.git",
+    "url": "git+https://github.com/honeystick/honeystick-dev.git",
     "directory": "packages/react"
   },
   "bugs": {
-    "url": "https://github.com/honeystick/honeystick-js/issues"
+    "url": "https://github.com/honeystick/honeystick-dev/issues"
   },
   "type": "module",
   "main": "./dist/index.js",
@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.85.6",
-    "honeystick": "^0.1.0"
+    "honeystick": "^0.80.0"
   },
   "peerDependencies": {
     "react": ">=18"

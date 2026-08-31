@@ -88,9 +88,23 @@ export function useCustomerActions({
 }) {
   const queryClient = useQueryClient();
 
+  /**
+   * `refetchType: 'all'`, not the default.
+   *
+   * The default is 'active', which reaches only a query some mounted component
+   * is observing right now. That is not the shape these actions have: `track`
+   * is usually called from a gate or a modal that closes on success, `cancel`
+   * and `activate` navigate, and the `useCustomer` that should show the new
+   * balance is often the thing that just unmounted. Marking it stale and
+   * leaving it is how a tracked unit lands on the server and never appears on
+   * the page.
+   */
   const invalidate = useCallback(
     () =>
-      queryClient.invalidateQueries({ queryKey: ['honeystick', 'customer'] }),
+      queryClient.invalidateQueries({
+        queryKey: ['honeystick', 'customer'],
+        refetchType: 'all',
+      }),
     [queryClient],
   );
 

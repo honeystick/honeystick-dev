@@ -84,7 +84,14 @@ export function useStoreEvents({
      * looks connected and receives nothing.
      */
     source.addEventListener('payment.settled', (event) => {
-      void queryClient.invalidateQueries({ queryKey: ['honeystick'] });
+      void queryClient.invalidateQueries({
+        queryKey: ['honeystick'],
+        // 'all', not the default 'active': a page behind a sheet or a
+        // backgrounded tab is exactly the reader a pushed frame exists
+        // for, and the default marks it stale and leaves it showing the
+        // old figure until it remounts.
+        refetchType: 'all',
+      });
       setStatus('live');
 
       let data: unknown = null;
@@ -113,7 +120,14 @@ export function useStoreEvents({
     source.addEventListener('honeystick', (event) => {
       // the frame is a nudge; the SDK does the read, so a usage meter on screen
       // refetches and updates itself off the back of this
-      void queryClient.invalidateQueries({ queryKey: ['honeystick'] });
+      void queryClient.invalidateQueries({
+        queryKey: ['honeystick'],
+        // 'all', not the default 'active': a page behind a sheet or a
+        // backgrounded tab is exactly the reader a pushed frame exists
+        // for, and the default marks it stale and leaves it showing the
+        // old figure until it remounts.
+        refetchType: 'all',
+      });
       setStatus('live');
 
       let data: unknown = null;

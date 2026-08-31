@@ -76,7 +76,14 @@ export function useStoreEvents(): {
     ]) {
       source.addEventListener(name, (event) => {
         setStatus('live');
-        void queryClient.invalidateQueries({ queryKey: ['honeystick'] });
+        void queryClient.invalidateQueries({
+          queryKey: ['honeystick'],
+          // 'all', not the default 'active': a page behind a sheet or a
+          // backgrounded tab is exactly the reader a pushed frame exists
+          // for, and the default marks it stale and leaves it showing the
+          // old figure until it remounts.
+          refetchType: 'all',
+        });
         let data: unknown = null;
         try {
           data = JSON.parse((event as MessageEvent).data);

@@ -57,6 +57,6 @@ server, which attaches the key on the way through.
 ESM only, with type declarations. Requires Node 18+.
 
 Full documentation, and five sample stores using it, at
-[github.com/honeystick/honeystick-js](https://github.com/honeystick/honeystick-js).
+[github.com/honeystick/honeystick-dev](https://github.com/honeystick/honeystick-dev).
 
 MIT © Honeystick
