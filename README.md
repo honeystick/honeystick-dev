@@ -1,18 +1,12 @@
 # Welcome to the Honeystick SDK
 
-The JavaScript SDK is for [Honeystick](https://honeystick.co.za) billing infrastructure. We have five
-sample stores that use it — the same shop, built five ways, so you can read the
-one closest to your stack.
+The JavaScript SDK is for [Honeystick](https://honeystick.co.za) billing
+infrastructure. Seven packages on npm, and five sample stores that use them —
+the same shop, built five ways, so you can read the one closest to your stack.
 
-This repo has two jobs, and both run from GitHub Actions:
-
-|                             | What                                                                                                                               | When               |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| **Publish the SDKs to npm** | the seven `packages/*`                                                                                                             | pushing a `v*` tag |
-| **Deploy the demo**         | `apps/next-store` → two Cloudflare Workers, [demo.honeystick.co.za](https://demo.honeystick.co.za) and `dev-demo.honeystick.co.za` | pushing to `main`  |
-
-Nothing else deploys or publishes. The other four apps are read-and-copy
-samples that run locally.
+Start with [Installing](#installing). If you want to see it running before you
+install anything, [demo.honeystick.co.za](https://demo.honeystick.co.za) is
+`apps/next-store` deployed.
 
 ## Packages
 
@@ -41,9 +35,7 @@ source rather than on a `.d.ts`.
 They are ESM only (`"type": "module"`), and the emitted imports carry `.js`
 extensions, so plain `node` resolves them with no bundler involved. That matters
 for `honeystick/backend`, `@honeystick/express` and `@honeystick/hono`, which
-are imported by ordinary Node servers. Verified by packing the tarballs,
-installing them into an empty project and importing every entry point — see
-"Publishing" below.
+are imported by ordinary Node servers.
 
 Subpath exports are real exports, not deep file paths:
 
@@ -57,17 +49,6 @@ import { HoneystickProvider } from '@honeystick/next/client';
 `honeystick/backend` is deliberately a separate entry: importing the handler
 never drags React context into a server bundle, and a page that only renders a
 price does not pull in a query client it has no use for.
-
-### How they are built
-
-`dist` is gitignored, so it is built rather than committed. The root `prepare`
-script runs `tsc --build` after `npm install`, which is the moment it has to
-exist — a fresh clone about to run an app resolves `@honeystick/*` through npm
-workspaces to `dist`, not to source.
-
-The scoped packages carry `publishConfig.access: "public"`, without which npm
-publishes a scoped package as restricted and installs fail for everyone else.
-Releasing is a tag away — see [Shipping](#shipping).
 
 ## Sample stores
 
@@ -207,119 +188,49 @@ takes the plan id as a hint, re-reads the plan through the SDK with its own key,
 and announces only what the read says. A forged post costs a wasted lookup and
 nothing else — it cannot invent a settled payment.
 
-## Things that will bite you
+## Things to know before you ship
 
-**The callback refuses private hosts.** Honeystick fetches the URL you supply,
-so without that check it is a request-forgery primitive. Both stores derive
-`notify_url` from the incoming request, which in local development means
-`http://localhost:3000/…` — refused, every time. Run behind a tunnel and the
-derivation produces a reachable address on its own.
+**A callback URL cannot be a private host.** Honeystick fetches the `notifyUrl`
+you supply, so it refuses private and loopback addresses — without that check it
+would be a request-forgery primitive. In local development your callback is
+`http://localhost:3000/…`, which is refused every time. Run behind a tunnel and
+a reachable address falls out on its own.
 
-**The in-process fan-out does not survive serverless.** The notify POST and an
-open SSE stream land in different instances on Vercel and on Cloudflare Workers,
-so the publish reaches nobody — silently, because the stream stays open. The
-Express store is one process and is fine. The Next store's `/api/events` also
-watches the named plan directly, which is what makes it host-independent.
+**An in-process fan-out does not survive serverless.** If you take a
+notification on one route and push it to an open SSE stream from another, the two
+land in different instances on Vercel and on Cloudflare Workers, so the publish
+reaches nobody — silently, because the stream stays open. Either run one process,
+or have the stream watch the plan directly rather than wait to be told.
 
-**`react-native-fast-sse` is not `EventSource`.** Every frame reaches the single
-`message` listener carrying `{ event, id, data }` — it does not dispatch by
-name. It never reconnects, deliberately. `close()` strips all listeners, so each
-reconnect needs a new instance. And a clean server-side close notifies nothing,
-which is why `use-store-events` runs a `readyState` watchdog.
-
-**Bare React Native needs a babel plugin Expo bundles for you.**
-`@babel/plugin-transform-export-namespace-from`, or zod fails to parse and the
+**Bare React Native needs a babel plugin Expo bundles for you.** Add
+`@babel/plugin-transform-export-namespace-from`, or `zod` fails to parse and the
 error names a plugin rather than anything you wrote. "Works in Expo, fails in
 bare React Native" is usually a preset difference like this one.
 
-## Status
+## Security
 
-Honest about what has been exercised, because the payment round trip reads like
-a proven path and only half of it is.
+**A secret key never reaches a browser or an app bundle** — see
+[the one rule](#the-one-rule-the-whole-design-rests-on). The rest of this section
+is what the handler does *not* do for you.
 
-**Verified against a running API:** the one-call checkout and email identity,
-usage tracking including the 403 at a limit, `updateCard` on an unpaid plan,
-`cancelPlan` and the `removed` case, and the native return bridge.
+**The handler authenticates, it does not authorize.** `identify()` establishes
+_who is calling_. Nothing downstream checks that answer against _what they asked
+for_, and a plan id is a guessable integer — so on its own, the handler will let
+a browser read or cancel any plan whose id it can guess.
 
-**Verified in isolation:** the receiving half of the notification. Given a plan
-already at `latest_status: 'active'`, both stores' notify routes verify it by
-re-reading and publish, and both streams deliver it. Those plans were put into
-that state by hand and the posts were sent with `curl`.
+Before real customers exist, join `identify` to a check that the plan belongs to
+whoever it returned. This is the one piece of the integration you have to write
+yourself.
 
-**Not exercised:** everything upstream. No payment has been made at PayFast, no
-ITN received, neither Inngest function run, and Honeystick has never actually
-posted to a store's callback. The status mapping (`COMPLETE → active`) and the
-callback body shape were checked by reading both sides, not by running them.
+The collection endpoints are already closed: `/customers`, `/customers/:id` and
+the `/customer-plans` collection are denied through a mounted handler, because
+they answer with every customer in the organization and their email addresses.
+`allowOrgWideReads` re-enables them and is named as a warning — turning it on is
+a statement that you have put your own authorization in front of the handler.
 
-**Known gap: the handler authenticates, it does not authorize.** `identify()`
-establishes _who is calling_, and nothing downstream checks that answer against
-_what they asked for_. So a browser can read or cancel any plan whose id it can
-guess.
+## Contributing
 
-The worst of it is closed: `/customers`, `/customers/:id` and the
-`/customer-plans` collection are denied through a mounted handler, because those
-answer with every customer in the organization and their email addresses.
-`allowOrgWideReads` re-enables them and is named as a warning — it is a
-statement that you have put your own authorization in front of the handler.
+Building the packages, what has and has not been exercised against a live API,
+and how releases and the demo deploy are cut: [CONTRIBUTING.md](CONTRIBUTING.md).
 
-What remains is that a plan id is a guessable integer. Fine for a guest demo
-where the ids are your own test data; not fine once real customers exist, at
-which point `identify` needs to be joined to a check that the plan belongs to
-whoever it returned.
-
-## Shipping
-
-Two pipelines, in `.github/workflows`.
-
-### Publishing the SDKs — `publish-packages.yml`
-
-Triggered by a `v*` tag, never by a merge: publishing cannot be undone, so it
-must not be something a pull request can cause by accident.
-
-```sh
-npm version 0.1.1 --workspaces --no-git-tag-version   # bump all seven together
-git commit -am "packages: 0.1.1" && git tag v0.1.1
-git push --follow-tags
-```
-
-The job checks the tag matches every `package.json` version, builds, then
-publishes in dependency order — `honeystick` first, because everything else
-names it at a real semver range now. Any package whose version is already on the
-registry is skipped, which is what makes a re-run after a partial failure safe
-rather than a second attempt at the first package.
-
-**No npm token.** Authentication is [trusted publishing](https://docs.npmjs.com/trusted-publishers):
-the workflow mints an OIDC token that npm matches against a publisher configured
-on each package, so there is nothing long-lived to store, leak or rotate. The
-same token attaches `--provenance`, a signed statement of which repository,
-workflow and commit built each tarball — verifiable with `npm audit signatures`.
-
-Two one-time setup steps:
-
-1. On npmjs.com, for **each** of the seven packages: _Settings → Trusted
-   Publisher → GitHub Actions_, naming this repository and
-   `publish-packages.yml`. Until that exists the publish fails with a 404.
-2. A GitHub Environment called `npm`, ideally with a required reviewer.
-   Publishing is the one action in this repo that cannot be undone.
-
-`workflow_dispatch` takes a `dry-run` input, defaulting to true — it packs and
-validates every package without uploading, which is the safe way to check a
-release before cutting the tag.
-
-### Deploying the demo — `deploy-demo.yml`
-
-Triggered by a push to `main` touching `apps/next-store/**`, `packages/**` or the
-lockfile. It builds once and deploys **two** Workers — `dev-demo` first, then
-`demo` — as wrangler environments off the same bundle. They can share a build
-because the only thing that differs is `NEXT_PUBLIC_STORE_URL`, which is read
-server-side and so resolves from each Worker's `vars` at request time.
-
-Each Worker holds its own `HONEYSTICK_SECRET_KEY`, set with
-`wrangler secret put --env …`, so dev-demo can point at a scratch organization
-and its test checkouts never reach the demo one.
-
-`apps/next-store/DEPLOY.md` has the one-time setup — the API token, the DNS
-records both hostnames need, and why a local build must not be deployed. It also
-covers deploying to Vercel instead, which works with no code change.
-
-Changes to `react-store`, `expo-store` or `rn-store` deploy nothing.
+MIT © Honeystick
