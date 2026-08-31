@@ -105,12 +105,23 @@ The one-time setup, already done for the seven packages that exist:
 **A brand-new package cannot be published by this workflow.** npm will not let a
 trusted publisher be configured for a package that does not exist yet, so an
 eighth package has to be created by one interactive `npm publish` from a
-maintainer's terminal — at a throwaway version, under `--tag bootstrap` so
-`latest` never points at a placeholder — before a trusted publisher can be
-attached and the tag takes over. That is how the original seven were created at
-`0.0.1-bootstrap.0`; those versions are deprecated and should not be unpublished,
-since removing a package's only version deletes the package and its publisher
-config with it.
+maintainer's terminal — at a throwaway version — before a trusted publisher can
+be attached and the tag takes over. That is how the original seven were created
+at `0.0.1-bootstrap.0`.
+
+Two things that bootstrap run gets wrong if you copy it naively. `--tag
+bootstrap` does not keep `latest` clean: npm points `latest` at a package's
+first published version whatever `--tag` says, so the placeholder is what `npm
+i` resolves to until the real release lands. And bumping one package's version
+in isolation breaks workspace resolution for its siblings — they name it at
+`^0.80.0`, which a `0.0.1-bootstrap.0` workspace no longer satisfies, so npm
+reaches for the registry and fails with `ETARGET`. Set the internal ranges to
+`*` for the duration as well, or publish the placeholder from a scratch
+directory instead.
+
+Deprecate the placeholder versions once the real release is out, but do not
+unpublish them: removing a package's only version deletes the package and its
+publisher config with it.
 
 `workflow_dispatch` takes a `dry-run` input, defaulting to true — it packs and
 validates every package without uploading, which is the safe way to check a
