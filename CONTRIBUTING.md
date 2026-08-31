@@ -4,6 +4,26 @@ Maintainer notes for this repo. If you are integrating the SDK into your own
 app, [README.md](README.md) is the one you want.
 
 
+## Running the sample stores
+
+```sh
+npm install
+
+# the web store, self-contained
+npm run dev -w @honeystick/next-store          # localhost:3000
+
+# or the API plus any of its three clients
+npm run dev -w @honeystick/express-api         # localhost:4000
+npm run dev -w @honeystick/react-store         # localhost:5173
+npm run start -w @honeystick/expo-store
+npm run start -w @honeystick/rn-store
+```
+
+No keys needed. Without `HONEYSTICK_SECRET_KEY` every store serves a sample
+catalogue and both checkout and subscribe walk the whole flow, stopping short of
+the one call that needs an organization. Copy `.env.example` to `.env` (or
+`.env.local`) and add a **sandbox** key to go live.
+
 ## How the packages are built
 
 `dist` is gitignored, so it is built rather than committed. The root `prepare`
@@ -33,11 +53,6 @@ that state by hand and the posts were sent with `curl`.
 ITN received, neither Inngest function run, and Honeystick has never actually
 posted to a store's callback. The status mapping (`COMPLETE → active`) and the
 callback body shape were checked by reading both sides, not by running them.
-
-The authorization gap is documented for integrators in
-[README.md](README.md#security) rather than here, because it is something they
-have to close in their own code, not something a maintainer can fix by reading
-this file.
 
 ## Shipping
 
