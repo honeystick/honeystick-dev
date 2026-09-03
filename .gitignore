@@ -23,3 +23,8 @@ dist/
 # OpenNext build output
 .open-next/
 .next/
+
+# Local release helper - runs `npm version` + `git tag` + `git push` against
+# real infra, so it stays out of the shared repo rather than becoming
+# something anyone can run by accident. See package.json "release" script.
+scripts/publish.sh

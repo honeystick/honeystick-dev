@@ -16,7 +16,8 @@
     "build": "tsc --build",
     "prepare": "tsc --build",
     "ts": "tsc --build",
-    "ts:check": "tsc --build --force"
+    "ts:check": "tsc --build --force",
+    "release": "bash scripts/publish.sh"
   },
   "devDependencies": {
     "typescript": "^5.9.2",
