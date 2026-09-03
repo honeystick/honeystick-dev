@@ -1,6 +1,6 @@
 {
   "name": "honeystick",
-  "version": "0.80.0",
+  "version": "0.80.1",
   "description": "Honeystick billing client for JavaScript and TypeScript",
   "license": "MIT",
   "keywords": [

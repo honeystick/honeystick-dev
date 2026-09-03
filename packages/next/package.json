@@ -1,6 +1,6 @@
 {
   "name": "@honeystick/next",
-  "version": "0.80.0",
+  "version": "0.80.1",
   "description": "Honeystick route handler, server client and hooks for Next.js",
   "license": "MIT",
   "keywords": [

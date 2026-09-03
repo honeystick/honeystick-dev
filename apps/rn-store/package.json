@@ -1,6 +1,6 @@
 {
   "name": "@honeystick/rn-store",
-  "version": "0.0.0",
+  "version": "0.80.1",
   "private": true,
   "description": "Honeystick Example App on bare React Native - the same store, on @honeystick/react-native, with no Expo anywhere",
   "scripts": {

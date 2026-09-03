@@ -1,6 +1,6 @@
 {
   "name": "@honeystick/next-store",
-  "version": "0.0.0",
+  "version": "0.80.1",
   "private": true,
   "description": "Honeystick Example App - a sample ecommerce store built on Honeystick and Next.js",
   "scripts": {

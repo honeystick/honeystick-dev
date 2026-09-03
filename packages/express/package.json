@@ -1,6 +1,6 @@
 {
   "name": "@honeystick/express",
-  "version": "0.80.0",
+  "version": "0.80.1",
   "description": "Honeystick handler for Express",
   "license": "MIT",
   "keywords": [

@@ -1,6 +1,6 @@
 {
   "name": "@honeystick/expo-store",
-  "version": "0.0.0",
+  "version": "0.80.1",
   "private": true,
   "main": "expo-router/entry",
   "description": "Honeystick Example App on native - the same store, built on @honeystick/expo against the Express API",

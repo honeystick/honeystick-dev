@@ -1,6 +1,6 @@
 {
   "name": "@honeystick/react-native",
-  "version": "0.80.0",
+  "version": "0.80.1",
   "description": "Honeystick provider and hooks for React Native",
   "license": "MIT",
   "keywords": [

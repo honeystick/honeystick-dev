@@ -1,6 +1,6 @@
 {
   "name": "@honeystick/express-api",
-  "version": "0.0.0",
+  "version": "0.80.1",
   "private": true,
   "type": "module",
   "description": "Honeystick Example App's backend - the same store logic as the Next app, on Express, and the server the Expo app talks to",
